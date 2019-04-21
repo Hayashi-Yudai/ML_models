@@ -1,4 +1,9 @@
 import argparse
+import os
+import glob
+
+import numpy as np
+from PIL import Image
 
 def get_parser():
   """
@@ -12,6 +17,27 @@ def get_parser():
   parser.add_argument('-l2', '--l2', type=float, default=0.001, help='L2 regularization')
 
   return parser
+
+def generate_data(image_dir, seg_dir):
+  """
+  generate the pair of the raw image and segmented image.
+  Args:
+    image_dir: the directory of the raw images.
+    seg_dir: the directory of the segmented images.
+  Returns:
+    yield two np.ndarrays
+  """
+  for img in os.listdir(image_dir):
+    if img.endswith('.png') or img.endswith('.jpg'):
+      split_name = os.path.splitext(img)
+      img = Image.open(os.path.join(image_dir, img))
+      seg = Image.open(os.path.join(seg_dir, split_name[0] + '-seg' + split_name[1]))
+
+      img = np.asarray(img, dtype=np.float32)
+      seg = np.asarray(seg, dtype=np.int8)
+
+      yield img, seg
+  
 
 if __name__ == '__main__':
   parser = get_parser.parse_args()

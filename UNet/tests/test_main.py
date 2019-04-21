@@ -1,8 +1,10 @@
 import os
+import shutil
 import sys
 sys.path.append('../')
 
 import unittest 
+import numpy as np
 import main
 
 class TestParser(unittest.TestCase):
@@ -15,9 +17,13 @@ class TestParser(unittest.TestCase):
     self.assertEqual(parser.l2, 0.001)
 
 class TestLoadDataset(unittest.TestCase):
-  def test_file_exist(self):
-    self.assertTrue(os.path.exists('../dataset/raw_images'))
-    self.assertTrue(os.path.exists('../dataset/segmented_images'))
+  IMAGE_DIR = '../dataset/raw_images'
+  SEG_DIR = '../dataset/segmented_images'
+
+  def test_data_type_is_ndarray(self):
+    for img, seg in main.generate_data(self.IMAGE_DIR, self.SEG_DIR):
+      self.assertEqual(type(img), type(np.array([])))
+      self.assertEqual(type(seg), type(np.array([])))
 
 if __name__ == '__main__':
   unittest.main()
