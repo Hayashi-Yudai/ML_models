@@ -6,7 +6,7 @@ import unittest
 import main
 
 class TestParser(unittest.TestCase):
-  def testDefaultArgment(self):
+  def test_default_argment(self):
     parser = main.get_parser().parse_args()
     self.assertEqual(parser.epoch, 100)
     self.assertEqual(parser.learning_rate, 0.01)
@@ -15,7 +15,7 @@ class TestParser(unittest.TestCase):
     self.assertEqual(parser.l2, 0.001)
 
 class TestLoadDataset(unittest.TestCase):
-  def testFileExist(self):
+  def test_file_exist(self):
     self.assertTrue(os.path.exists('../dataset/raw_images'))
     self.assertTrue(os.path.exists('../dataset/segmented_images'))
 
