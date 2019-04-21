@@ -1,3 +1,4 @@
+import os
 import sys
 sys.path.append('../')
 
@@ -12,6 +13,11 @@ class TestParser(unittest.TestCase):
     self.assertEqual(parser.train_rate, 0.8)
     self.assertEqual(parser.batch_size, 50)
     self.assertEqual(parser.l2, 0.001)
+
+class TestLoadDataset(unittest.TestCase):
+  def testFileExist(self):
+    self.assertTrue(os.path.exists('../dataset/raw_images'))
+    self.assertTrue(os.path.exists('../dataset/segmented_images'))
 
 if __name__ == '__main__':
   unittest.main()

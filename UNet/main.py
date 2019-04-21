@@ -12,3 +12,6 @@ def get_parser():
   parser.add_argument('-l2', '--l2', type=float, default=0.001, help='L2 regularization')
 
   return parser
+
+if __name__ == '__main__':
+  parser = get_parser.parse_args()
