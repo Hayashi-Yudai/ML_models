@@ -20,10 +20,18 @@ class TestLoadDataset(unittest.TestCase):
   IMAGE_DIR = '../dataset/raw_images'
   SEG_DIR = '../dataset/segmented_images'
 
+  def setUp(self):
+    self.data = main.generate_data(self.IMAGE_DIR, self.SEG_DIR)
+
   def test_data_type_is_ndarray(self):
-    for img, seg in main.generate_data(self.IMAGE_DIR, self.SEG_DIR):
+    for img, seg in self.data:
       self.assertEqual(type(img), type(np.array([])))
       self.assertEqual(type(seg), type(np.array([])))
+
+  def test_size_is_valid(self):
+    for img, seg in self.data:
+      self.assertEqual(img.shape, (128, 128, 3))
+      self.assertEqual(seg.shape, (128, 128))
 
 if __name__ == '__main__':
   unittest.main()
