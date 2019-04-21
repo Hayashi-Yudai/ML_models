@@ -41,6 +41,8 @@ def generate_data(image_dir, seg_dir, onehot=True):
       img = np.asarray(img, dtype=np.float32)
       seg = np.asarray(seg, dtype=np.int8)
 
+      img /= 255.0
+
       yield img, seg
   
 

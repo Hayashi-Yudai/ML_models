@@ -32,6 +32,12 @@ class TestLoadDataset(unittest.TestCase):
     for img, seg in self.data:
       self.assertEqual(img.shape, (128, 128, 3))
       self.assertEqual(seg.shape, (128, 128))
+      self.assertEqual(type(img[0,0,0]), np.float32)
+      self.assertEqual(type(seg[0,0]), np.int8)
+
+  def test_is_normalized(self):
+    for img, seg in self.data:
+      self.assertTrue(np.min(img) >= 0.0 and np.max(img) <= 1.0)
 
 if __name__ == '__main__':
   unittest.main()
