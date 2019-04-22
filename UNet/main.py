@@ -5,6 +5,8 @@ import glob
 import numpy as np
 from PIL import Image
 
+import model
+
 def get_parser():
   """
   Set hyper parameters for training UNet.
@@ -44,6 +46,10 @@ def generate_data(image_dir, seg_dir, onehot=True):
       img /= 255.0
 
       yield img, seg
+    
+def train(parser):
+  l2 = parser.l2
+  model = model.UNet(l2)
   
 
 if __name__ == '__main__':
