@@ -3,7 +3,7 @@ import shutil
 import sys
 sys.path.append('../')
 
-import unittest 
+import unittest
 import numpy as np
 import main
 
@@ -38,6 +38,7 @@ class TestLoadDataset(unittest.TestCase):
   def test_is_normalized(self):
     for img, seg in self.data:
       self.assertTrue(np.min(img) >= 0.0 and np.max(img) <= 1.0)
+      self.assertTrue(np.all(seg >= 0))
 
 if __name__ == '__main__':
   unittest.main()
