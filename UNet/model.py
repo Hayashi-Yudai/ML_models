@@ -42,12 +42,15 @@ def conv2d(
   return layer
 
 
-def trans_conv(inputs, filters, activation=tf.nn.relu, kernel_size=2, strides=2):
+def trans_conv(inputs, filters, activation=tf.nn.relu, kernel_size=2, strides=2, l2_reg=None):
+  regularizer = tf.contrib.layers.l2_regularizer(scale=l2_reg) if l2_reg is not None else None
+
   layer = tf.layers.conv2d_transpose(
     inputs=inputs,
     filters=filters,
     kernel_size=kernel_size,
-    strides=strides
+    strides=strides,
+    kernel_regularizer=regularizer
   )
 
   return layer
