@@ -5,7 +5,10 @@ import unittest
 import numpy as np
 import main
 
+testcase = 1
+
 class TestParser(unittest.TestCase):
+  @unittest.skipIf(testcase == 1, "SKIP")
   def test_default_argment(self):
     parser = main.get_parser().parse_args()
     self.assertEqual(parser.epoch, 100)
