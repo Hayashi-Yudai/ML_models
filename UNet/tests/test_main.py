@@ -30,16 +30,38 @@ class TestLoadDataset(unittest.TestCase):
       self.assertEqual(type(seg), type(np.array([])))
 
   def test_size_is_valid(self):
+    class_num = 2
     for img, seg in self.data:
       self.assertEqual(img.shape, (128, 128, 3))
-      self.assertEqual(seg.shape, (128, 128))
-      self.assertEqual(type(img[0,0,0]), np.float32)
-      self.assertEqual(type(seg[0,0]), np.int8)
+      self.assertEqual(seg.shape, (128, 128, class_num))
+      self.assertEqual(img.dtype, np.float32)
+      self.assertEqual(seg.dtype, np.int8)
 
   def test_is_normalized(self):
     for img, seg in self.data:
       self.assertTrue(np.min(img) >= 0.0 and np.max(img) <= 1.0)
       self.assertTrue(np.all(seg >= 0))
+
+class TestPreprocessing(unittest.TestCase):
+  def test_preprocess(self):
+    input_img = np.random.randint(0, 255, (1, 128, 128, 3))
+    segmented = np.array([
+      [0, 0, 1],
+      [1, 0, 1],
+      [0, 1, 0]
+    ])
+    processed_img, seg = main.preprocess(input_img, segmented, onehot=True)
+
+    # One-Hot representation of 'segmented'
+    seg_predicted = np.array([
+      [[1, 0], [1, 0], [0, 1]],
+      [[0, 1], [1, 0], [0, 1]],
+      [[1, 0], [0, 1], [1, 0]]
+    ])
+
+    self.assertTrue(np.min(processed_img) >= 0.0 and np.max(processed_img) <= 1.0)
+    self.assertTrue(np.all(seg == seg_predicted))
+
 
 if __name__ == '__main__':
   unittest.main()
