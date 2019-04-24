@@ -62,5 +62,23 @@ class TestEachLayers(unittest.TestCase):
 
     self.assertEqual(outputs.shape, (3, 64, 64, 3))
 
+class TestUNet(unittest.TestCase):
+  def test_unet(self):
+    inputs = np.ones((3, 128, 128, 3))
+
+    tf.reset_default_graph()
+    x = tf.placeholder(tf.float32, [None, 128, 128, 3])
+    layer = model.UNet(x, classes=2, l2_reg=0.01, is_training=True)
+    layer_val = model.UNet(x, classes=2, l2_reg=0.01, is_training=False)
+    init = tf.global_variables_initializer()
+
+    with tf.Session() as sess:
+      init.run()
+      outputs = sess.run(layer, feed_dict={x: inputs})
+      outputs_val = sess.run(layer, feed_dict={x: inputs})
+
+    self.assertEqual(outputs.shape, (3, 128, 128, 2))
+    self.assertEqual(outputs_val.shape, (3, 128, 128, 2))
+
 if __name__ == '__main__':
   unittest.main()
