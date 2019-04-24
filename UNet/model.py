@@ -54,3 +54,6 @@ def trans_conv(inputs, filters, activation=tf.nn.relu, kernel_size=2, strides=2,
   )
 
   return layer
+
+def pooling(inputs):
+  return tf.layers.max_pooling2d(inputs=inputs, pool_size=2, strides=2)
