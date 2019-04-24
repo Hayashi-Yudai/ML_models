@@ -2,8 +2,8 @@ import tensorflow as tf
 import numpy as np
 
 def conv2d(
-  inputs, filters, activation=tf.nn.relu, l2_reg=None, is_training=False,
-  momentum=0.95, epsilon=0.001
+  inputs, filters, kernel_size=3, activation=tf.nn.relu, l2_reg=None, 
+  momentum=0.95, epsilon=0.001, is_training=False,
   ):
   """
   convolutional layer. If the l2_reg is a float number, L2 regularization is imposed.
@@ -22,7 +22,7 @@ def conv2d(
   layer = tf.layers.conv2d(
     inputs=inputs,
     filters=filters,
-    kernel_size=3,
+    kernel_size=kernel_size,
     padding='SAME',
     activation=activation,
     kernel_regularizer=regularizer
@@ -43,6 +43,18 @@ def conv2d(
 
 
 def trans_conv(inputs, filters, activation=tf.nn.relu, kernel_size=2, strides=2, l2_reg=None):
+  """
+  transposed convolution layer.
+  Args:
+    inputs: input tensor
+    filters: the number of the filter
+    activation: the activation function. The default function is the ReLu.
+    kernel_size: the kernel size. Default = 2
+    strides: strides. Default = 2
+    l2_reg: the strengthen of the L2 regularization. float or None
+  Returns:
+    tf.Tensor
+  """
   regularizer = tf.contrib.layers.l2_regularizer(scale=l2_reg) if l2_reg is not None else None
 
   layer = tf.layers.conv2d_transpose(
@@ -57,3 +69,53 @@ def trans_conv(inputs, filters, activation=tf.nn.relu, kernel_size=2, strides=2,
 
 def pooling(inputs):
   return tf.layers.max_pooling2d(inputs=inputs, pool_size=2, strides=2)
+
+
+def UNet(inputs, classes, l2_reg=None, is_training=False):
+  """
+  UNet structure.
+  Args:
+    inputs: input images with (None, 128, 128, number of class) shape
+    classes: the number of the class label
+    l2_reg: float or None. The strengthen of the L2 regularization.
+    is_training: boolean. Whether the session is for training or validation.
+  Returns:
+    tf.Tensor
+  """
+  conv1_1 = conv2d(inputs, filters=64, l2_reg=l2_reg, is_training=is_training)
+  conv1_2 = conv2d(conv1_1, filters=64, l2_reg=l2_reg, is_training=is_training)
+  pool1 = pooling(conv1_2)
+
+  conv2_1 = conv2d(pool1, filters=128, l2_reg=l2_reg, is_training=is_training)
+  conv2_2 = conv2d(conv2_1, filters=128, l2_reg=l2_reg, is_training=is_training)
+  pool2 = pooling(conv2_2)
+
+  conv3_1 = conv2d(pool2, filters=256, l2_reg=l2_reg, is_training=is_training)
+  conv3_2 = conv2d(conv3_1, filters=256, l2_reg=l2_reg, is_training=is_training)
+  pool3 = pooling(conv3_2)
+
+  conv4_1 = conv2d(pool3, filters=512, l2_reg=l2_reg, is_training=is_training)
+  conv4_2 = conv2d(conv4_1, filters=512, l2_reg=l2_reg, is_training=is_training)
+  pool4 = pooling(conv4_2)
+
+  conv5_1 = conv2d(pool4, filters=1024, l2_reg=l2_reg, is_training=is_training)
+  conv5_2 = conv2d(conv5_1, filters=1024, l2_reg=l2_reg, is_training=is_training)
+  concat1 = tf.concat([conv4_2, trans_conv(conv5_2, filters=512, l2_reg=l2_reg)], axis=3)
+
+  conv6_1 = conv2d(concat1, filters=512, l2_reg=l2_reg, is_training=is_training)
+  conv6_2 = conv2d(conv6_1, filters=512, l2_reg=l2_reg, is_training=is_training)
+  concat2 = tf.concat([conv3_2, trans_conv(conv6_2, filters=256, l2_reg=l2_reg)], axis=3)
+
+  conv7_1 = conv2d(concat2, filters=256, l2_reg=l2_reg, is_training=is_training)
+  conv7_2 = conv2d(conv7_1, filters=256, l2_reg=l2_reg, is_training=is_training)
+  concat3 = tf.concat([conv2_2, trans_conv(conv7_2, filters=128, l2_reg=l2_reg)], axis=3)
+
+  conv8_1 = conv2d(concat3, filters=128, l2_reg=l2_reg, is_training=is_training)
+  conv8_2 = conv2d(conv8_1, filters=128, l2_reg=l2_reg, is_training=is_training)
+  concat4 = tf.concat([conv1_2, trans_conv(conv8_2, filters=64, l2_reg=l2_reg)], axis=3)
+
+  conv9_1 = conv2d(concat4, filters=64, l2_reg=l2_reg, is_training=is_training)
+  conv9_2 = conv2d(conv9_1, filters=64, l2_reg=l2_reg, is_training=is_training)
+  outputs = conv2d(conv9_2, filters=classes, kernel_size=1, activation=None, is_training=is_training)
+
+  return outputs
