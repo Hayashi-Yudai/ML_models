@@ -29,7 +29,6 @@ def generate_data(image_dir, seg_dir, onehot=True):
   Returns:
     yield two np.ndarrays. The shapes are (128, 128, 3) and (128, 128)
   """
-  #TODO: add a preprocessing function.
   #TODO: create batch by cropping and augumentation.
   for img in os.listdir(image_dir):
     if img.endswith('.png') or img.endswith('.jpg'):
@@ -37,20 +36,21 @@ def generate_data(image_dir, seg_dir, onehot=True):
       img = Image.open(os.path.join(image_dir, img))
       seg = Image.open(os.path.join(seg_dir, split_name[0] + '-seg' + split_name[1]))
 
-      img = img.resize((128, 128)) # temporal process (see TODO above)
-      seg = seg.resize((128, 128)) # temporal process (see TODO above)
+      img = img.resize((128, 128))
+      seg = seg.resize((128, 128)) 
 
       img = np.asarray(img, dtype=np.float32)
       seg = np.asarray(seg, dtype=np.int8)
 
-      img /= 255.0
-
+      img, seg = preprocess(img, seg, onehot=onehot)
       yield img, seg
     
-def train(parser):
-  l2 = parser.l2
-  model = model.UNet(l2)
-  
+def preprocess(img, seg, onehot):
+  if onehot:
+    identity = np.identity(2, dtype=np.int8)  #TODO: the number of class is hard coded
+    seg = identity[seg]
+
+  return img / 255.0, seg
 
 if __name__ == '__main__':
   parser = get_parser.parse_args()
