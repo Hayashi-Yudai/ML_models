@@ -119,3 +119,32 @@ def UNet(inputs, classes, l2_reg=None, is_training=False):
   outputs = conv2d(conv9_2, filters=classes, kernel_size=1, activation=None, is_training=is_training)
 
   return outputs
+
+def train(data, parser):
+  """
+  training operation
+  arguments of this function are given by functions in main.py
+  Args:
+    data: generator set of image and segmented image
+    parser: the paser that has some options
+  """
+  epoch = parser.epoch
+  batch_size = parser.batch_size
+
+  X = tf.placeholder(tf.float32, [None, 128, 128, 3])
+  y = tf.placeholder(tf.int32, [None, 128 , 128, 2])
+  output = UNet(X, classes=2, l2_reg=parser.l2, is_training=True)
+  loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(labels=y, logits=output))
+  update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+  #TODO: introduce some metrics, accuracy... maybe
+
+  with tf.control_dependencies(update_ops):
+    train_ops = tf.train.AdamOptimizer(parser.learning_rate).minimize(loss)
+
+  init = tf.global_variables_initializer()
+  with tf.Session() as sess:
+    init.run()
+    for e in range(epoch):
+      for Input, Teacher in data:
+        #TODO: split training data and validation data
+        sess.run(train_ops, feed_dict={X: [Input], y: [Teacher]})
