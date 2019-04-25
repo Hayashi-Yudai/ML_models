@@ -1,6 +1,8 @@
 import tensorflow as tf
 import numpy as np
 
+import main
+
 def conv2d(
   inputs, filters, kernel_size=3, activation=tf.nn.relu, l2_reg=None, 
   momentum=0.95, epsilon=0.001, is_training=False,
@@ -120,7 +122,7 @@ def UNet(inputs, classes, l2_reg=None, is_training=False):
 
   return outputs
 
-def train(data, parser):
+def train(parser):
   """
   training operation
   arguments of this function are given by functions in main.py
@@ -136,7 +138,6 @@ def train(data, parser):
   output = UNet(X, classes=2, l2_reg=parser.l2, is_training=True)
   loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(labels=y, logits=output))
   update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
-  #TODO: introduce some metrics, accuracy... maybe
 
   with tf.control_dependencies(update_ops):
     train_ops = tf.train.AdamOptimizer(parser.learning_rate).minimize(loss)
@@ -145,6 +146,9 @@ def train(data, parser):
   with tf.Session() as sess:
     init.run()
     for e in range(epoch):
+      data = main.generate_data('./dataset/raw_images/', './dataset/segmented_images/')
       for Input, Teacher in data:
         #TODO: split training data and validation data
         sess.run(train_ops, feed_dict={X: [Input], y: [Teacher]})
+        ls = loss.eval(feed_dict={X: [Input], y: [Teacher]})
+        print(f'epoch #{e + 1}, loss = {ls}')

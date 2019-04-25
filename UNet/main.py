@@ -54,6 +54,4 @@ def preprocess(img, seg, onehot):
 
 if __name__ == '__main__':
   parser = get_parser().parse_args()
-
-  data = generate_data('./dataset/raw_images/', './dataset/segmented_images/')
-  model.train(data, parser)
+  model.train(parser)
