@@ -5,7 +5,7 @@ import main
 
 def conv2d(
   inputs, filters, kernel_size=3, activation=tf.nn.relu, l2_reg=None, 
-  momentum=0.95, epsilon=0.001, is_training=False,
+  momentum=0.9, epsilon=0.001, is_training=False,
   ):
   """
   convolutional layer. If the l2_reg is a float number, L2 regularization is imposed.
@@ -30,7 +30,7 @@ def conv2d(
     kernel_regularizer=regularizer
   )
 
-  if is_training:
+  if is_training is not None:
     layer = tf.layers.batch_normalization(
       inputs=layer,
       axis=-1,
@@ -73,7 +73,7 @@ def pooling(inputs):
   return tf.layers.max_pooling2d(inputs=inputs, pool_size=2, strides=2)
 
 
-def UNet(inputs, classes, l2_reg=None, is_training=False):
+def UNet(inputs, classes, is_training, l2_reg=None):
   """
   UNet structure.
   Args:
@@ -100,34 +100,33 @@ def UNet(inputs, classes, l2_reg=None, is_training=False):
   conv4_2 = conv2d(conv4_1, filters=512, l2_reg=l2_reg, is_training=is_training)
   pool4 = pooling(conv4_2)
 
-  conv5_1 = conv2d(pool4, filters=1024, l2_reg=l2_reg, is_training=is_training)
-  conv5_2 = conv2d(conv5_1, filters=1024, l2_reg=l2_reg, is_training=is_training)
+  conv5_1 = conv2d(pool4, filters=1024, l2_reg=l2_reg)
+  conv5_2 = conv2d(conv5_1, filters=1024, l2_reg=l2_reg)
   concat1 = tf.concat([conv4_2, trans_conv(conv5_2, filters=512, l2_reg=l2_reg)], axis=3)
 
-  conv6_1 = conv2d(concat1, filters=512, l2_reg=l2_reg, is_training=is_training)
-  conv6_2 = conv2d(conv6_1, filters=512, l2_reg=l2_reg, is_training=is_training)
+  conv6_1 = conv2d(concat1, filters=512, l2_reg=l2_reg)
+  conv6_2 = conv2d(conv6_1, filters=512, l2_reg=l2_reg)
   concat2 = tf.concat([conv3_2, trans_conv(conv6_2, filters=256, l2_reg=l2_reg)], axis=3)
 
-  conv7_1 = conv2d(concat2, filters=256, l2_reg=l2_reg, is_training=is_training)
-  conv7_2 = conv2d(conv7_1, filters=256, l2_reg=l2_reg, is_training=is_training)
+  conv7_1 = conv2d(concat2, filters=256, l2_reg=l2_reg)
+  conv7_2 = conv2d(conv7_1, filters=256, l2_reg=l2_reg)
   concat3 = tf.concat([conv2_2, trans_conv(conv7_2, filters=128, l2_reg=l2_reg)], axis=3)
 
-  conv8_1 = conv2d(concat3, filters=128, l2_reg=l2_reg, is_training=is_training)
-  conv8_2 = conv2d(conv8_1, filters=128, l2_reg=l2_reg, is_training=is_training)
+  conv8_1 = conv2d(concat3, filters=128, l2_reg=l2_reg)
+  conv8_2 = conv2d(conv8_1, filters=128, l2_reg=l2_reg)
   concat4 = tf.concat([conv1_2, trans_conv(conv8_2, filters=64, l2_reg=l2_reg)], axis=3)
 
-  conv9_1 = conv2d(concat4, filters=64, l2_reg=l2_reg, is_training=is_training)
-  conv9_2 = conv2d(conv9_1, filters=64, l2_reg=l2_reg, is_training=is_training)
-  outputs = conv2d(conv9_2, filters=classes, kernel_size=1, activation=None, is_training=is_training)
+  conv9_1 = conv2d(concat4, filters=64, l2_reg=l2_reg)
+  conv9_2 = conv2d(conv9_1, filters=64, l2_reg=l2_reg)
+  outputs = conv2d(conv9_2, filters=classes, kernel_size=1, activation=None)
 
   return outputs
 
 def train(parser):
   """
   training operation
-  arguments of this function are given by functions in main.py
+  argument of this function are given by functions in main.py
   Args:
-    data: generator set of image and segmented image
     parser: the paser that has some options
   """
   epoch = parser.epoch
@@ -135,7 +134,8 @@ def train(parser):
 
   X = tf.placeholder(tf.float32, [None, 128, 128, 3])
   y = tf.placeholder(tf.int32, [None, 128 , 128, 2])
-  output = UNet(X, classes=2, l2_reg=parser.l2, is_training=True)
+  is_training = tf.placeholder(tf.bool)
+  output = UNet(X, classes=2, l2_reg=parser.l2, is_training=is_training)
   loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(labels=y, logits=output))
   update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
 
@@ -149,13 +149,13 @@ def train(parser):
       data = main.generate_data('./dataset/raw_images/', './dataset/segmented_images/')
       for Input, Teacher in data:
         #TODO: split training data and validation data
-        sess.run(train_ops, feed_dict={X: [Input], y: [Teacher]})
-        ls = loss.eval(feed_dict={X: [Input], y: [Teacher]})
+        sess.run(train_ops, feed_dict={X: [Input], y: [Teacher], is_training: True})
+        ls = loss.eval(feed_dict={X: [Input], y: [Teacher], is_training: None})
         print(f'epoch #{e + 1}, loss = {ls}')
 
     data = main.generate_data('./dataset/raw_images/', './dataset/segmented_images/')
     for Input, _ in data:
-      result = sess.run(output, feed_dict={X: [Input]})
+      result = sess.run(output, feed_dict={X: [Input], is_training: None}) 
       break
     
     result = np.argmax(result[0], axis=2)
