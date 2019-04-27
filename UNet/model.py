@@ -152,3 +152,16 @@ def train(parser):
         sess.run(train_ops, feed_dict={X: [Input], y: [Teacher]})
         ls = loss.eval(feed_dict={X: [Input], y: [Teacher]})
         print(f'epoch #{e + 1}, loss = {ls}')
+
+    data = main.generate_data('./dataset/raw_images/', './dataset/segmented_images/')
+    for Input, _ in data:
+      result = sess.run(output, feed_dict={X: [Input]})
+      break
+    
+    result = np.argmax(result[0], axis=2)
+    ident = np.identity(3, dtype=np.int8)
+    result = ident[result]*255
+
+    import matplotlib.pyplot as plt
+    plt.imshow(result)
+    plt.show()
