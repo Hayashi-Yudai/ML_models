@@ -143,6 +143,7 @@ def train(parser):
     train_ops = tf.train.AdamOptimizer(parser.learning_rate).minimize(loss)
 
   init = tf.global_variables_initializer()
+  saver = tf.train.Saver(max_to_keep=100)
   with tf.Session() as sess:
     init.run()
     for e in range(epoch):
@@ -152,6 +153,9 @@ def train(parser):
         sess.run(train_ops, feed_dict={X: [Input], y: [Teacher], is_training: True})
         ls = loss.eval(feed_dict={X: [Input], y: [Teacher], is_training: None})
         print(f'epoch #{e + 1}, loss = {ls}')
+      
+      if e % 10 == 0:
+        saver.save(sess, f"./params/model_{e + 1}epochs.ckpt")
 
     data = main.generate_data('./dataset/raw_images/', './dataset/segmented_images/')
     for Input, _ in data:
