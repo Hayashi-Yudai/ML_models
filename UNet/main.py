@@ -20,7 +20,7 @@ def get_parser():
 
   return parser
 
-def generate_data(image_dir, seg_dir, onehot=True):
+def generate_data(image_dir, seg_dir, batch_size, onehot=True):
   """
   generate the pair of the raw image and segmented image.
   Args:
@@ -30,7 +30,10 @@ def generate_data(image_dir, seg_dir, onehot=True):
     yield two np.ndarrays. The shapes are (128, 128, 3) and (128, 128)
   """
   #TODO: create batch by cropping and augumentation.
-  for img in os.listdir(image_dir):
+  row_img = []
+  segmented_img = []
+  images = os.listdir(image_dir)
+  for idx, img in enumerate(images):
     if img.endswith('.png') or img.endswith('.jpg'):
       split_name = os.path.splitext(img)
       img = Image.open(os.path.join(image_dir, img))
@@ -43,7 +46,12 @@ def generate_data(image_dir, seg_dir, onehot=True):
       seg = np.asarray(seg, dtype=np.int8)
 
       img, seg = preprocess(img, seg, onehot=onehot)
-      yield img, seg
+      row_img.append(img)
+      segmented_img.append(seg)
+      if len(row_img) == batch_size or idx == len(images) - 1:
+        yield row_img, segmented_img 
+        row_img = []
+        segmented_img = []
     
 def preprocess(img, seg, onehot):
   if onehot:
