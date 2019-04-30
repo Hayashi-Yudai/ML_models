@@ -147,19 +147,19 @@ def train(parser):
   with tf.Session() as sess:
     init.run()
     for e in range(epoch):
-      data = main.generate_data('./dataset/raw_images/', './dataset/segmented_images/')
+      data = main.generate_data('./dataset/raw_images/', './dataset/segmented_images/', batch_size)
       for Input, Teacher in data:
         #TODO: split training data and validation data
-        sess.run(train_ops, feed_dict={X: [Input], y: [Teacher], is_training: True})
-        ls = loss.eval(feed_dict={X: [Input], y: [Teacher], is_training: None})
+        sess.run(train_ops, feed_dict={X: Input, y: Teacher, is_training: True})
+        ls = loss.eval(feed_dict={X: Input, y: Teacher, is_training: None})
         print(f'epoch #{e + 1}, loss = {ls}')
       
       if e % 10 == 0:
         saver.save(sess, f"./params/model_{e + 1}epochs.ckpt")
 
-    data = main.generate_data('./dataset/raw_images/', './dataset/segmented_images/')
+    data = main.generate_data('./dataset/raw_images/', './dataset/segmented_images/', batch_size)
     for Input, _ in data:
-      result = sess.run(output, feed_dict={X: [Input], is_training: None}) 
+      result = sess.run(output, feed_dict={X: Input, is_training: None}) 
       break
     
     result = np.argmax(result[0], axis=2)
