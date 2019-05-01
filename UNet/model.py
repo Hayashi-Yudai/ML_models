@@ -154,7 +154,7 @@ def train(parser):
         ls = loss.eval(feed_dict={X: Input, y: Teacher, is_training: None})
         print(f'epoch #{e + 1}, loss = {ls}')
       
-      if e % 10 == 0:
+      if e % 100 == 0:
         saver.save(sess, f"./params/model_{e + 1}epochs.ckpt")
 
     data = main.generate_data('./dataset/validation/', '', 1)
@@ -162,7 +162,6 @@ def train(parser):
       result = sess.run(output, feed_dict={X: Input, is_training: None}) 
       break
     
-    #print(Input)
     result = np.argmax(result[0], axis=2)
     ident = np.identity(3, dtype=np.int8)
     result = ident[result]*255
