@@ -157,15 +157,17 @@ def train(parser):
       if e % 10 == 0:
         saver.save(sess, f"./params/model_{e + 1}epochs.ckpt")
 
-    data = main.generate_data('./dataset/raw_images/', './dataset/segmented_images/', batch_size)
+    data = main.generate_data('./dataset/validation/', '', 1)
     for Input, _ in data:
       result = sess.run(output, feed_dict={X: Input, is_training: None}) 
       break
     
+    #print(Input)
     result = np.argmax(result[0], axis=2)
     ident = np.identity(3, dtype=np.int8)
     result = ident[result]*255
 
     import matplotlib.pyplot as plt
-    plt.imshow(result)
+    plt.imshow((Input[0]*255).astype(np.int16))
+    plt.imshow(result, alpha=0.2)
     plt.show()
