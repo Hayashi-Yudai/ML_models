@@ -1,6 +1,7 @@
 import argparse
 import os
 import glob
+import random
 
 import numpy as np
 from PIL import Image
@@ -23,9 +24,12 @@ def get_parser():
 def generate_data(image_dir, seg_dir, batch_size, onehot=True):
   """
   generate the pair of the raw image and segmented image.
+  when the validation, seg_dir='' and generate only images
   Args:
     image_dir: the directory of the raw images.
     seg_dir: the directory of the segmented images.
+    batch_size: integer.
+    onehot: whether use one-hot representation or not.
   Returns:
     yield two np.ndarrays. The shapes are (128, 128, 3) and (128, 128)
   """
@@ -33,6 +37,7 @@ def generate_data(image_dir, seg_dir, batch_size, onehot=True):
   row_img = []
   segmented_img = []
   images = os.listdir(image_dir)
+  random.shuffle(images)
   for idx, img in enumerate(images):
     if img.endswith('.png') or img.endswith('.jpg'):
       split_name = os.path.splitext(img)
