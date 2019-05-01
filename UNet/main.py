@@ -37,13 +37,15 @@ def generate_data(image_dir, seg_dir, batch_size, onehot=True):
     if img.endswith('.png') or img.endswith('.jpg'):
       split_name = os.path.splitext(img)
       img = Image.open(os.path.join(image_dir, img))
-      seg = Image.open(os.path.join(seg_dir, split_name[0] + '-seg' + split_name[1]))
+      if seg_dir != '':
+        seg = Image.open(os.path.join(seg_dir, split_name[0] + '-seg' + split_name[1]))
+        seg = seg.resize((128, 128)) 
+        seg = np.asarray(seg, dtype=np.int8)
+      else:
+        seg = None
 
       img = img.resize((128, 128))
-      seg = seg.resize((128, 128)) 
-
       img = np.asarray(img, dtype=np.float32)
-      seg = np.asarray(seg, dtype=np.int8)
 
       img, seg = preprocess(img, seg, onehot=onehot)
       row_img.append(img)
@@ -54,7 +56,7 @@ def generate_data(image_dir, seg_dir, batch_size, onehot=True):
         segmented_img = []
     
 def preprocess(img, seg, onehot):
-  if onehot:
+  if onehot and seg is not None:
     identity = np.identity(2, dtype=np.int8)  #TODO: the number of class is hard coded
     seg = identity[seg]
 
