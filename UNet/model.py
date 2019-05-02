@@ -90,7 +90,6 @@ class UNet:
     """
     UNet structure.
     Args:
-      inputs: input images with (None, 128, 128, number of class) shape
       classes: the number of the class label
       l2_reg: float or None. The strengthen of the L2 regularization.
       is_training: boolean. Whether the session is for training or validation.
