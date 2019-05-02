@@ -69,4 +69,5 @@ def preprocess(img, seg, onehot):
 
 if __name__ == '__main__':
   parser = get_parser().parse_args()
-  model.train(parser)
+  unet = model.UNet(classes=2)
+  unet.train(parser)

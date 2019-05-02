@@ -15,9 +15,9 @@ class TestEachLayers(unittest.TestCase):
   def test_convolution_layer(self):
     tf.reset_default_graph()
     x = tf.placeholder(tf.float32, [None, 128, 128, 3])
-    layer = model.conv2d(x, filters=64)
-    layer_with_l2 = model.conv2d(x, filters=64, l2_reg=0.01)
-    layer_with_bn = model.conv2d(x, filters=64, is_training=True)
+    layer = model.UNet.conv2d(x, filters=64)
+    layer_with_l2 = model.UNet.conv2d(x, filters=64, l2_reg=0.01)
+    layer_with_bn = model.UNet.conv2d(x, filters=64, is_training=True)
 
     init = tf.global_variables_initializer()
     with tf.Session() as sess:
@@ -37,8 +37,8 @@ class TestEachLayers(unittest.TestCase):
   def test_transposed_convolution_layer(self):
     tf.reset_default_graph()
     x = tf.placeholder(tf.float32, [None, 128, 128, 3])
-    layer = model.trans_conv(x, filters=64)
-    layer_with_l2 = model.trans_conv(x, filters=64, l2_reg=0.01)
+    layer = model.UNet.trans_conv(x, filters=64)
+    layer_with_l2 = model.UNet.trans_conv(x, filters=64, l2_reg=0.01)
     init = tf.global_variables_initializer()
 
     with tf.Session() as sess:
@@ -53,7 +53,7 @@ class TestEachLayers(unittest.TestCase):
   def test_pooling_layer(self):
     tf.reset_default_graph()
     x = tf.placeholder(tf.float32, [None, 128, 128, 3])
-    layer = model.pooling(x)
+    layer = model.UNet.pooling(x)
     init = tf.global_variables_initializer()
 
     with tf.Session() as sess:
@@ -67,15 +67,15 @@ class TestUNet(unittest.TestCase):
     inputs = np.ones((3, 128, 128, 3))
 
     tf.reset_default_graph()
-    x = tf.placeholder(tf.float32, [None, 128, 128, 3])
-    layer = model.UNet(x, classes=2, l2_reg=0.01, is_training=True)
-    layer_val = model.UNet(x, classes=2, l2_reg=0.01, is_training=False)
+    unet = model.UNet(classes=2)
+    layer = unet.UNet(l2_reg=0.01, is_training=True)
+    layer_val = unet.UNet(l2_reg=0.01, is_training=False)
     init = tf.global_variables_initializer()
 
     with tf.Session() as sess:
       init.run()
-      outputs = sess.run(layer, feed_dict={x: inputs})
-      outputs_val = sess.run(layer, feed_dict={x: inputs})
+      outputs = sess.run(layer, feed_dict={unet.X: inputs})
+      outputs_val = sess.run(layer, feed_dict={unet.X: inputs})
 
     self.assertEqual(outputs.shape, (3, 128, 128, 2))
     self.assertEqual(outputs_val.shape, (3, 128, 128, 2))
