@@ -21,17 +21,29 @@ def get_parser():
 
   return parser
 
-def generate_data(image_dir, seg_dir, batch_size, onehot=True):
+def generate_data(image_dir, seg_dir, batch_size, n_class=2, onehot=True):
   """
   generate the pair of the raw image and segmented image.
   when the validation, seg_dir='' and generate only images
-  Args:
-    image_dir: the directory of the raw images.
-    seg_dir: the directory of the segmented images.
-    batch_size: integer.
-    onehot: whether use one-hot representation or not.
-  Returns:
-    yield two np.ndarrays. The shapes are (128, 128, 3) and (128, 128)
+
+  Parameters
+  ---------- 
+    image_dir: string 
+      the directory of the raw images.
+    seg_dir: string
+      the directory of the segmented images.
+    batch_size: int
+    n_class: int
+      the number of the class in the images.
+    onehot: bool 
+      whether use one-hot representation or not.
+
+  Returns
+  -------
+    row_img: np.ndarray
+      The shape is (128, 128, 3).
+    segmented_img: np.ndarray or None
+      The shape is (128, 128, N_CLASS)
   """
   #TODO: create batch by cropping and augumentation.
   row_img = []
@@ -52,7 +64,7 @@ def generate_data(image_dir, seg_dir, batch_size, onehot=True):
       img = img.resize((128, 128))
       img = np.asarray(img, dtype=np.float32)
 
-      img, seg = preprocess(img, seg, onehot=onehot)
+      img, seg = preprocess(img, seg, n_class, onehot=onehot)
       row_img.append(img)
       segmented_img.append(seg)
       if len(row_img) == batch_size or idx == len(images) - 1:
@@ -60,9 +72,9 @@ def generate_data(image_dir, seg_dir, batch_size, onehot=True):
         row_img = []
         segmented_img = []
     
-def preprocess(img, seg, onehot):
+def preprocess(img, seg, n_class, onehot):
   if onehot and seg is not None:
-    identity = np.identity(2, dtype=np.int8)  #TODO: the number of class is hard coded
+    identity = np.identity(n_class, dtype=np.int8) 
     seg = identity[seg]
 
   return img / 255.0, seg

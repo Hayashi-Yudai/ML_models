@@ -21,16 +21,26 @@ class UNet:
     ):
     """
     convolutional layer. If the l2_reg is a float number, L2 regularization is imposed.
-    Args:
+    
+    Parameters
+    ----------
       inputs: tf.Tensor
-      filters: Non-zero positive integer. The number of the filter 
-      activation: The activation function. The default is tf.nn.relu
-      l2_reg: None or a float. The strengthen of the L2 regularization
-      is_training: boolean (tf.Tensor). The default is False. If True, the batch normalization layer is added.
-      momentum: float. The hyper parameter of the batch normalization layer
-      epsilon: float. The hyper parameter of the batch normalization layer
-    Returns:
-      tf.Tensor
+      filters: Non-zero positive integer
+        The number of the filter 
+      activation: 
+        The activation function. The default is tf.nn.relu
+      l2_reg: None or float
+        The strengthen of the L2 regularization
+      is_training: tf.bool
+        The default is False. If True, the batch normalization layer is added.
+      momentum: float
+        The hyper parameter of the batch normalization layer
+      epsilon: float
+        The hyper parameter of the batch normalization layer
+
+    Returns
+    -------
+      layer: tf.Tensor
     """
     regularizer = tf.contrib.layers.l2_regularizer(scale=l2_reg) if l2_reg is not None else None
     layer = tf.layers.conv2d(
@@ -59,15 +69,24 @@ class UNet:
   def trans_conv(inputs, filters, activation=tf.nn.relu, kernel_size=2, strides=2, l2_reg=None):
     """
     transposed convolution layer.
-    Args:
-      inputs: input tensor
-      filters: the number of the filter
-      activation: the activation function. The default function is the ReLu.
-      kernel_size: the kernel size. Default = 2
-      strides: strides. Default = 2
-      l2_reg: the strengthen of the L2 regularization. float or None
-    Returns:
-      tf.Tensor
+
+    Parameters
+    ---------- 
+      inputs: tf.Tensor
+      filters: int 
+        the number of the filter
+      activation: 
+        the activation function. The default function is the ReLu.
+      kernel_size: int
+        the kernel size. Default = 2
+      strides: int
+        strides. Default = 2
+      l2_reg: None or float 
+        the strengthen of the L2 regularization.
+
+    Returns
+    -------
+      layer: tf.Tensor
     """
     regularizer = tf.contrib.layers.l2_regularizer(scale=l2_reg) if l2_reg is not None else None
 
@@ -89,12 +108,17 @@ class UNet:
   def UNet(self, is_training, l2_reg=None):
     """
     UNet structure.
-    Args:
-      classes: the number of the class label
-      l2_reg: float or None. The strengthen of the L2 regularization.
-      is_training: boolean. Whether the session is for training or validation.
-    Returns:
-      tf.Tensor
+
+    Parameters
+    ----------
+      l2_reg: None or float
+        The strengthen of the L2 regularization.
+      is_training: tf.bool
+        Whether the session is for training or validation.
+
+    Returns
+    -------
+      outputs: tf.Tensor
     """
     conv1_1 = self.conv2d(self.X, filters=64, l2_reg=l2_reg, is_training=is_training)
     conv1_2 = self.conv2d(conv1_1, filters=64, l2_reg=l2_reg, is_training=is_training)
@@ -138,8 +162,11 @@ class UNet:
     """
     training operation
     argument of this function are given by functions in main.py
-    Args:
-      parser: the paser that has some options
+
+    Parameters
+    ----------
+      parser: 
+        the paser that has some options
     """
     epoch = parser.epoch
     l2 = parser.l2
