@@ -189,8 +189,8 @@ class UNet:
           #TODO: split training data and validation data
           sess.run(train_ops, feed_dict={self.X: Input, self.y: Teacher, self.is_training: True})
           ls = loss.eval(feed_dict={self.X: Input, self.y: Teacher, self.is_training: None})
-          print(f'epoch #{e + 1}, loss = {ls}')
-        
+
+        print(f'epoch #{e + 1}, loss = {ls}')
         if e % 100 == 0:
           saver.save(sess, f"./params/model_{e + 1}epochs.ckpt")
 
