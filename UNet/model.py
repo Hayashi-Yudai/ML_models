@@ -175,29 +175,32 @@ class UNet:
     output = self.UNet(l2_reg=l2, is_training=self.is_training)
     loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(labels=self.y, logits=output))
     update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
-
     with tf.control_dependencies(update_ops):
       train_ops = tf.train.AdamOptimizer(parser.learning_rate).minimize(loss)
 
     init = tf.global_variables_initializer()
     saver = tf.train.Saver(max_to_keep=100)
+    all_train, all_val = main.load_data(self.IMAGE_DIR, self.SEGMENTED_DIR, n_class=2, train_val_rate=0.9)
     with tf.Session() as sess:
       init.run()
       for e in range(epoch):
-        data = main.generate_data(self.IMAGE_DIR, self.SEGMENTED_DIR, batch_size)
+        data = main.generate_data(*all_train, batch_size)
+        val_data = main.generate_data(*all_val, len(all_val[0]))
         for Input, Teacher in data:
-          #TODO: split training data and validation data
           sess.run(train_ops, feed_dict={self.X: Input, self.y: Teacher, self.is_training: True})
           ls = loss.eval(feed_dict={self.X: Input, self.y: Teacher, self.is_training: None})
+          for val_Input, val_Teacher in val_data:
+            val_loss = loss.eval(feed_dict={self.X: val_Input, self.y: val_Teacher, self.is_training: None})
 
-        print(f'epoch #{e + 1}, loss = {ls}')
+        print(f'epoch #{e + 1}, loss = {ls}, val loss = {val_loss}')
         if e % 100 == 0:
           saver.save(sess, f"./params/model_{e + 1}epochs.ckpt")
 
       self.validation(sess, output)
 
   def validation(self, sess, output):
-    data = main.generate_data(self.VALIDATION_DIR, '', 1)
+    val_image = main.load_data(self.VALIDATION_DIR, '', n_class=2, train_val_rate=1)[0]
+    data = main.generate_data(*val_image, batch_size=1)
     for Input, _ in data:
       result = sess.run(output, feed_dict={self.X: Input, self.is_training: None}) 
       break
