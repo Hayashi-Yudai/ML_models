@@ -171,6 +171,7 @@ class UNet:
     epoch = parser.epoch
     l2 = parser.l2
     batch_size = parser.batch_size
+    train_val_rate = parser.train_rate
 
     output = self.UNet(l2_reg=l2, is_training=self.is_training)
     loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(labels=self.y, logits=output))
@@ -180,7 +181,7 @@ class UNet:
 
     init = tf.global_variables_initializer()
     saver = tf.train.Saver(max_to_keep=100)
-    all_train, all_val = main.load_data(self.IMAGE_DIR, self.SEGMENTED_DIR, n_class=2, train_val_rate=0.9)
+    all_train, all_val = main.load_data(self.IMAGE_DIR, self.SEGMENTED_DIR, n_class=2, train_val_rate=train_val_rate)
     with tf.Session() as sess:
       init.run()
       for e in range(epoch):
