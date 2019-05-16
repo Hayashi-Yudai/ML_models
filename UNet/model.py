@@ -14,6 +14,7 @@ class UNet:
     self.y = tf.placeholder(tf.int16, [None, 128, 128, self.classes])
     self.is_training = tf.placeholder(tf.bool)
 
+
   @staticmethod
   def conv2d(
     inputs, filters, kernel_size=3, activation=tf.nn.relu, l2_reg=None, 
@@ -65,6 +66,7 @@ class UNet:
 
     return layer
 
+
   @staticmethod
   def trans_conv(inputs, filters, activation=tf.nn.relu, kernel_size=2, strides=2, l2_reg=None):
     """
@@ -99,6 +101,7 @@ class UNet:
     )
 
     return layer
+
 
   @staticmethod
   def pooling(inputs):
@@ -158,6 +161,7 @@ class UNet:
 
     return outputs
 
+
   def train(self, parser):
     """
     training operation
@@ -174,30 +178,47 @@ class UNet:
     train_val_rate = parser.train_rate
 
     output = self.UNet(l2_reg=l2, is_training=self.is_training)
-    loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(labels=self.y, logits=output))
+    loss = tf.reduce_mean(
+      tf.nn.softmax_cross_entropy_with_logits_v2(labels=self.y, logits=output)
+      )
     update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
     with tf.control_dependencies(update_ops):
       train_ops = tf.train.AdamOptimizer(parser.learning_rate).minimize(loss)
 
     init = tf.global_variables_initializer()
     saver = tf.train.Saver(max_to_keep=100)
-    all_train, all_val = main.load_data(self.IMAGE_DIR, self.SEGMENTED_DIR, n_class=2, train_val_rate=train_val_rate)
+    all_train, all_val = main.load_data(
+                                  self.IMAGE_DIR,
+                                  self.SEGMENTED_DIR,
+                                  n_class=2,
+                                  train_val_rate=train_val_rate
+                                  )
     with tf.Session() as sess:
       init.run()
       for e in range(epoch):
         data = main.generate_data(*all_train, batch_size)
         val_data = main.generate_data(*all_val, len(all_val[0]))
         for Input, Teacher in data:
-          sess.run(train_ops, feed_dict={self.X: Input, self.y: Teacher, self.is_training: True})
+          sess.run(
+            train_ops,
+            feed_dict={self.X: Input, self.y: Teacher, self.is_training: True}
+          )
           ls = loss.eval(feed_dict={self.X: Input, self.y: Teacher, self.is_training: None})
           for val_Input, val_Teacher in val_data:
-            val_loss = loss.eval(feed_dict={self.X: val_Input, self.y: val_Teacher, self.is_training: None})
+            val_loss = loss.eval(
+                          feed_dict={
+                            self.X: val_Input,
+                            self.y: val_Teacher,
+                            self.is_training: None
+                            }
+                          )
 
         print(f'epoch #{e + 1}, loss = {ls}, val loss = {val_loss}')
         if e % 100 == 0:
           saver.save(sess, f"./params/model_{e + 1}epochs.ckpt")
 
       self.validation(sess, output)
+
 
   def validation(self, sess, output):
     val_image = main.load_data(self.VALIDATION_DIR, '', n_class=2, train_val_rate=1)[0]

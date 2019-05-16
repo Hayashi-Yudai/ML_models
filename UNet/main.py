@@ -16,11 +16,14 @@ def get_parser():
   parser = argparse.ArgumentParser()
   parser.add_argument('-e', '--epoch', type=int, default=100)
   parser.add_argument('-lr', '--learning_rate', type=float, default=0.0001)
-  parser.add_argument('-tr', '--train_rate', type=float, default=0.8, help='ratio of training data')
+  parser.add_argument('-tr', '--train_rate', type=float, default=0.8,
+                      help='ratio of training data')
   parser.add_argument('-b', '--batch_size', type=int, default=20)
-  parser.add_argument('-l2', '--l2', type=float, default=0.05, help='L2 regularization')
+  parser.add_argument('-l2', '--l2', type=float, default=0.05,
+                      help='L2 regularization')
 
   return parser
+
 
 def load_data(image_dir, seg_dir, n_class, train_val_rate, onehot=True):
   """
@@ -40,9 +43,12 @@ def load_data(image_dir, seg_dir, n_class, train_val_rate, onehot=True):
 
   Returns
   =======
-  the tuple.((training image, training segmented image), (validation image, validation segmented image))
-  training/validation (segmented) images are the list of np.ndarray whose shape is (128, 128, 3) (row image)
-  and (128, 128, n_class) (segmented image)
+  the tuple.(
+    (training image, training segmented image),
+    (validation image, validation segmented image)
+    )
+  training/validation (segmented) images are the list of np.ndarray whose shape
+  is (128, 128, 3) (row image) and (128, 128, n_class) (segmented image)
   """
   row_img = []
   segmented_img = []
@@ -65,8 +71,10 @@ def load_data(image_dir, seg_dir, n_class, train_val_rate, onehot=True):
       row_img.append(img)
       segmented_img.append(seg)
   
-  train_data = row_img[:int(len(row_img)*train_val_rate)], segmented_img[:int(len(row_img)*train_val_rate)]
-  validation_data = row_img[int(len(row_img) * train_val_rate):], segmented_img[int(len(row_img) * train_val_rate):]
+  train_data = row_img[: int(len(row_img) * train_val_rate)], \
+                segmented_img[:int(len(row_img)*train_val_rate)]
+  validation_data = row_img[int(len(row_img) * train_val_rate) :],\
+                    segmented_img[int(len(row_img) * train_val_rate):]
 
   return train_data, validation_data
 
@@ -101,6 +109,7 @@ def preprocess(img, seg, n_class, onehot):
     seg = identity[seg]
 
   return img / 255.0, seg
+
 
 if __name__ == '__main__':
   parser = get_parser().parse_args()
