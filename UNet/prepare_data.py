@@ -1,5 +1,4 @@
 import os
-import glob
 import random
 import math
 
@@ -35,11 +34,11 @@ def load_data(image_dir, seg_dir, n_class, train_val_rate, onehot=True):
   segmented_img = []
   images = os.listdir(image_dir)
   random.shuffle(images)
-  for idx, img in enumerate(images):
+  for img in images:
     if img.endswith('.png') or img.endswith('.jpg'):
       split_name = os.path.splitext(img)
       img = Image.open(os.path.join(image_dir, img))
-      if seg_dir != '':
+      if seg_dir is not None:
         seg = Image.open(os.path.join(seg_dir, split_name[0] + '-seg' + split_name[1]))
         seg = seg.resize((128, 128)) 
         seg = np.asarray(seg, dtype=np.int16)
@@ -52,10 +51,11 @@ def load_data(image_dir, seg_dir, n_class, train_val_rate, onehot=True):
       row_img.append(img)
       segmented_img.append(seg)
   
-  train_data = row_img[: int(len(row_img) * train_val_rate)], \
-                segmented_img[:int(len(row_img)*train_val_rate)]
-  validation_data = row_img[int(len(row_img) * train_val_rate) :],\
-                    segmented_img[int(len(row_img) * train_val_rate):]
+  train_val_border = int(len(row_img) * train_val_rate)
+  train_data = row_img[: train_val_border], \
+                segmented_img[: train_val_border]
+  validation_data = row_img[train_val_border:],\
+                    segmented_img[train_val_border:]
 
   return train_data, validation_data
 
@@ -75,7 +75,7 @@ def generate_data(input_images, teacher_images, batch_size):
   """
   batch_num = math.ceil(len(input_images) / batch_size)
   input_images = np.array_split(input_images, batch_num)
-  if np.any(teacher_images == None):
+  if np.any(teacher_images is None):
     teacher_images = np.zeros(batch_num)
   else:
     teacher_images = np.array_split(teacher_images, batch_num)

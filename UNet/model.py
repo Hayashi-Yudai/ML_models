@@ -68,7 +68,7 @@ class UNet:
 
 
   @staticmethod
-  def trans_conv(inputs, filters, activation=tf.nn.relu, kernel_size=2, strides=2, l2_reg=None):
+  def trans_conv(inputs, filters, kernel_size=2, strides=2, l2_reg=None):
     """
     transposed convolution layer.
 
@@ -77,8 +77,6 @@ class UNet:
       inputs: tf.Tensor
       filters: int 
         the number of the filter
-      activation: 
-        the activation function. The default function is the ReLu.
       kernel_size: int
         the kernel size. Default = 2
       strides: int
@@ -221,7 +219,7 @@ class UNet:
 
 
   def validation(self, sess, output):
-    val_image = prepare_data.load_data(self.VALIDATION_DIR, '', n_class=2, train_val_rate=1)[0]
+    val_image = prepare_data.load_data(self.VALIDATION_DIR, None, n_class=2, train_val_rate=1)[0]
     data = prepare_data.generate_data(*val_image, batch_size=1)
     for Input, _ in data:
       result = sess.run(output, feed_dict={self.X: Input, self.is_training: None}) 
