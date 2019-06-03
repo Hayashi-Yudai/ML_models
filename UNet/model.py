@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 
-import main
+import prepare_data
 
 class UNet:
   def __init__(self, classes):
@@ -165,7 +165,7 @@ class UNet:
   def train(self, parser):
     """
     training operation
-    argument of this function are given by functions in main.py
+    argument of this function are given by functions in prepare_data.py
 
     Parameters
     ----------
@@ -187,7 +187,7 @@ class UNet:
 
     init = tf.global_variables_initializer()
     saver = tf.train.Saver(max_to_keep=100)
-    all_train, all_val = main.load_data(
+    all_train, all_val = prepare_data.load_data(
                                   self.IMAGE_DIR,
                                   self.SEGMENTED_DIR,
                                   n_class=2,
@@ -196,8 +196,8 @@ class UNet:
     with tf.Session() as sess:
       init.run()
       for e in range(epoch):
-        data = main.generate_data(*all_train, batch_size)
-        val_data = main.generate_data(*all_val, len(all_val[0]))
+        data = prepare_data.generate_data(*all_train, batch_size)
+        val_data = prepare_data.generate_data(*all_val, len(all_val[0]))
         for Input, Teacher in data:
           sess.run(
             train_ops,
@@ -221,8 +221,8 @@ class UNet:
 
 
   def validation(self, sess, output):
-    val_image = main.load_data(self.VALIDATION_DIR, '', n_class=2, train_val_rate=1)[0]
-    data = main.generate_data(*val_image, batch_size=1)
+    val_image = prepare_data.load_data(self.VALIDATION_DIR, '', n_class=2, train_val_rate=1)[0]
+    data = prepare_data.generate_data(*val_image, batch_size=1)
     for Input, _ in data:
       result = sess.run(output, feed_dict={self.X: Input, self.is_training: None}) 
       break
