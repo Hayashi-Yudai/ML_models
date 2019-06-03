@@ -3,7 +3,41 @@ import random
 import math
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageOps, ImageEnhance
+
+
+def preprocess(img, seg, img_list, seg_list, n_class, onehot):
+  for i in range(10):
+    img2 = img
+    seg2 = seg
+    mark = [0, 1]
+    if seg2 is not None:
+      if np.random.choice(mark) == 1:
+        img2 = ImageOps.flip(img2)
+        seg2 = ImageOps.flip(seg2)
+      if np.random.choice(mark) == 1:
+        img2 = ImageOps.mirror(img2)
+        seg2 = ImageOps.mirror(seg2)
+
+    color_img = ImageEnhance.Color(img2)   
+    change = np.random.rand() / 2.0 + 0.75
+    img2 = color_img.enhance(change)
+
+    img2 = img2.resize([128, 128])
+    img2 = np.asarray(img2, dtype=np.float32)
+    if seg2 is not None:
+      seg2 = seg2.resize([128, 128])
+      seg2 = np.asarray(seg2, dtype=np.int16)
+
+    if onehot and seg is not None:
+      identity = np.identity(n_class, dtype=np.int16) 
+      seg2 = identity[seg2]
+    img_list.append(img2/255.0)
+    if seg2 is not None:
+      seg_list.append(seg2)
+
+  return None
+
 
 def load_data(image_dir, seg_dir, n_class, train_val_rate, onehot=True):
   """
@@ -40,16 +74,10 @@ def load_data(image_dir, seg_dir, n_class, train_val_rate, onehot=True):
       img = Image.open(os.path.join(image_dir, img))
       if seg_dir is not None:
         seg = Image.open(os.path.join(seg_dir, split_name[0] + '-seg' + split_name[1]))
-        seg = seg.resize((128, 128)) 
-        seg = np.asarray(seg, dtype=np.int16)
       else:
         seg = None
 
-      img = img.resize((128, 128))
-      img = np.asarray(img, dtype=np.float32)
-      img, seg = preprocess(img, seg, n_class, onehot=onehot)
-      row_img.append(img)
-      segmented_img.append(seg)
+      preprocess(img, seg, row_img, segmented_img, n_class, onehot=onehot)
   
   train_val_border = int(len(row_img) * train_val_rate)
   train_data = row_img[: train_val_border], \
@@ -84,9 +112,3 @@ def generate_data(input_images, teacher_images, batch_size):
     yield input_images[i], teacher_images[i]
 
     
-def preprocess(img, seg, n_class, onehot):
-  if onehot and seg is not None:
-    identity = np.identity(n_class, dtype=np.int16) 
-    seg = identity[seg]
-
-  return img / 255.0, seg
