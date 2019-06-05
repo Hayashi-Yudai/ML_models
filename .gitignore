@@ -1,3 +1,4 @@
 /UNet/params/*
 /UNet/__pycache__/
 /UNet/tests/__pycache__/
+/ACoL/raw-img
