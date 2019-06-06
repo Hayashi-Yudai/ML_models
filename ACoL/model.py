@@ -1,4 +1,6 @@
 import tensorflow as tf
+import numpy as np
+from PIL import Image
 
 saver = tf.train.import_meta_graph('./vgg16.ckpt.meta')
 
@@ -30,8 +32,19 @@ with tf.name_scope('branch_A'):
     strides=1,
     padding='SAME'
   )
+  flatten = tf.reduce_mean(conv3, axis=[1, 2])
+
+# For test only
+img = Image.open('/home/yudai/Pictures/raw-img/train/cat/936.jpeg')
+img = img.resize([224, 224])
+img = np.asarray(img, dtype=np.float32)
+img /= 255.0
 
 init = tf.global_variables_initializer()
 with tf.Session() as sess:
   init.run()
   saver.restore(sess, './vgg16.ckpt')
+  
+  res = sess.run(flatten, feed_dict={X: [img]})
+
+print(res)
