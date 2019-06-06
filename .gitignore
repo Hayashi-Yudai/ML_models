@@ -2,3 +2,6 @@
 /UNet/__pycache__/
 /UNet/tests/__pycache__/
 /ACoL/raw-img
+/ACoL/vgg*
+/ACoL/events*
+/ACoL/checkpoint
