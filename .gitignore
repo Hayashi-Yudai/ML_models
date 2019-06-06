@@ -1,7 +1,6 @@
 /UNet/params/*
 /UNet/__pycache__/
 /UNet/tests/__pycache__/
-/ACoL/raw-img
-/ACoL/vgg*
-/ACoL/events*
-/ACoL/checkpoint
+/ACoL/vgg16/vgg*
+/ACoL/vgg16/events*
+/ACoL/vgg16/checkpoint
