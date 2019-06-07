@@ -53,30 +53,10 @@ class TestLoadDataset(unittest.TestCase):
     test_data, _ = prepare_data.load_data(self.IMAGE_DIR, None, n_class=2, train_val_rate=0.9)
     test_images = prepare_data.generate_data(*test_data, 1)
     for img, seg in test_images:
-      self.assertEqual(type(seg), np.ndarray)
-      self.assertEqual(seg[0], None)
+      self.assertEqual(len(seg), 0)
 
       break
 
-class TestPreprocessing(unittest.TestCase):
-  def test_preprocess(self):
-    input_img = np.random.randint(0, 255, (1, 128, 128, 3))
-    segmented = np.array([
-      [0, 0, 1],
-      [1, 0, 1],
-      [0, 1, 0]
-    ])
-    processed_img, seg = prepare_data.preprocess(input_img, segmented, n_class=2, onehot=True)
-
-    # One-Hot representation of 'segmented'
-    seg_predicted = np.array([
-      [[1, 0], [1, 0], [0, 1]],
-      [[0, 1], [1, 0], [0, 1]],
-      [[1, 0], [0, 1], [1, 0]]
-    ])
-
-    self.assertTrue(np.min(processed_img) >= 0.0 and np.max(processed_img) <= 1.0)
-    self.assertTrue(np.all(seg == seg_predicted))
 
 if __name__ == '__main__':
   unittest.main()

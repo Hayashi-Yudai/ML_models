@@ -7,6 +7,21 @@ from PIL import Image, ImageOps, ImageEnhance
 
 
 def preprocess(img, seg, img_list, seg_list, n_class, onehot):
+  """
+  Preprocess the image for training or validation
+
+  Parameters
+  ==========
+  img: image opened by PIL library. Original images
+  seg: image opened by PIL library. Segmented images
+  img_list, seg_list: list of np.ndarray that contains preprocessed images.
+  n_class: int that represents the number of the class
+  onehot: bool that determine wheter ones use one-hot representation 
+
+  Returns
+  =======
+  None
+  """
   for i in range(10):
     img2 = img
     seg2 = seg
