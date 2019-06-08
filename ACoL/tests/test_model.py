@@ -51,11 +51,18 @@ class TestModel(unittest.TestCase):
         feed_dict={self.acol.X: self.img}
       ).shape
 
+      #Output
+      output_shape = sess.run(
+        self.acol.output,
+        feed_dict={self.acol.X: self.img}
+      ).shape
+
     self.assertEqual(backborn_shape, (self.BATCH_SIZE, 14, 14, 512))
     self.assertEqual(flattenA_shape, (self.BATCH_SIZE, self.CLASS_NUM))
     self.assertEqual(feature_map_A_shape, (self.BATCH_SIZE, 14, 14))
     self.assertEqual(flattenB_shape, (self.BATCH_SIZE, self.CLASS_NUM))
     self.assertEqual(feature_map_B_shape, (self.BATCH_SIZE, 14, 14))
+    self.assertEqual(output_shape, (self.BATCH_SIZE, 14, 14))
 
 
 if __name__ == '__main__':
