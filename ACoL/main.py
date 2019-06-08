@@ -17,4 +17,4 @@ if __name__ == '__main__':
     acol = model.ACoL(batch_size=parser.batch_size,
                       class_num=10,
                       threshold=parser.threshold)
-    acol.training(parser)
+    acol.training(parser, is_training=True)

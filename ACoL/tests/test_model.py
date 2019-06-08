@@ -21,6 +21,7 @@ class TestModel(unittest.TestCase):
         self.acol = model.ACoL(self.BATCH_SIZE, self.CLASS_NUM)
 
     def test_shapes(self):
+        self.acol.network(None)
         saver = tf.train.import_meta_graph(self.CKPT_PATH + 'vgg16.ckpt.meta')
         init = tf.global_variables_initializer()
         with tf.Session() as sess:
