@@ -131,7 +131,7 @@ class ACoL:
             self.validation(sess)
 
     def validation(self, sess):
-      dataset = prepare_data.generate_dataset(self.batch_size, False)
+      dataset = prepare_data.generate_dataset(self.batch_size, train=False, val=True)
       for data, _ in dataset:
         origin = data
         res = sess.run(

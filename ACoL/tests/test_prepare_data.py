@@ -31,6 +31,13 @@ class TestLoadData(unittest.TestCase):
             self.assertEqual(len(label), 10)
             break
 
+    def test_validation_dataset(self):
+        img, label = prepare_data.make_dataset(train=False, val=True)
+        self.assertEqual(img[0].shape, (224, 224, 3))
+        self.assertEqual(label[0].shape, (10, ))
+        self.assertEqual(sum(label[0]), 1)
+
+
 
 if __name__ == '__main__':
     unittest.main()

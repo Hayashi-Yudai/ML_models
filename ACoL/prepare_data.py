@@ -47,7 +47,7 @@ def make_dataset(train=True, val=False) -> tuple:
       return np.array(dataset)[-50:], np.array(labels)[-50:]
 
 
-def generate_dataset(batch_size: int, train=True):
+def generate_dataset(batch_size: int, train=True, val=False):
     dataset, labels = make_dataset(train)
     perm = np.random.permutation(len(labels))
     dataset, labels = dataset[perm], labels[perm]
