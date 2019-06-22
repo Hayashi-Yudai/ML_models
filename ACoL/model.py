@@ -109,7 +109,7 @@ class ACoL:
         )
         loss = lossA + lossB
 
-        train_ops = tf.train.AdamOptimizer(0.01).minimize(loss)
+        train_ops = tf.train.AdamOptimizer(lr).minimize(loss)
         init = tf.global_variables_initializer()
         with tf.Session() as sess:
             init.run()
@@ -137,7 +137,8 @@ class ACoL:
         res = sess.run(
           self.output,
           feed_dict={
-            self.X: data 
+            self.X: data,
+            self.is_training: None 
           }
         )
         break
