@@ -147,5 +147,6 @@ class ACoL:
 
       plt.figure()
       plt.imshow((origin[0]*255).astype(np.int16))
-      plt.imshow(res, cmap='jet', alpha=0.3)
+      plt.imshow(res, cmap='seismic', alpha=0.3)
+      plt.colorbar()
       plt.show()
