@@ -4,6 +4,7 @@ import tflearn
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
+from scipy import interpolate
 
 import prepare_data
 
@@ -129,8 +130,6 @@ class ACoL:
             
             self.validation(sess)
 
-
-
     def validation(self, sess):
       dataset = prepare_data.generate_dataset(self.batch_size, False)
       for data, _ in dataset:
@@ -143,7 +142,16 @@ class ACoL:
         )
         break
 
-      res = res[0].repeat(16, axis=0).repeat(16, axis=1)
+      res = res[0]
+      space = int((16*14 - 2) / (14 - 1))
+      x = [space*i for i in range(14)]
+      y = [space*i for i in range(14)]
+      x[-1] = 223
+      y[-1] = 223
+      f = interpolate.interp2d(x, y, res)
+      xx = [i for i in range(224)]
+      yy = [i for i in range(224)]
+      res = f(xx, yy)
 
       plt.figure()
       plt.imshow((origin[0]*255).astype(np.int16))
