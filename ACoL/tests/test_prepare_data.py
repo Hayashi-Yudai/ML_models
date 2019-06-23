@@ -40,4 +40,6 @@ class TestLoadData(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    #unittest.main()
+    data, label = prepare_data.make_dataset(False)
+    print(label)

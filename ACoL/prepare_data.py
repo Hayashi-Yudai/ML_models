@@ -1,6 +1,6 @@
 import os
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageOps, ImageEnhance
 
 IMAGE_DIR = '/home/yudai/Pictures/raw-img'
 CLASS_NUM = 10
@@ -18,12 +18,7 @@ def image_files(train=True) -> list:
                 tmp.append(suffix + f'/{category}/' + f)
 
         images.append(tmp)
-
-    return images
-
-
-def make_dataset(train=True, val=False) -> tuple:
-    images = image_files(train)
+    
     class_idx = 0
     dataset = []
     labels = []
@@ -31,26 +26,70 @@ def make_dataset(train=True, val=False) -> tuple:
         label = np.array([0]*CLASS_NUM)
         label[class_idx] = 1
         for img in images[category]:
-            pil_img = Image.open(IMAGE_DIR + img)
-            pil_img = pil_img.resize([224, 224])
-            np_img = np.asanyarray(pil_img, dtype=np.float32)
-            np_img /= 255.0
-
-            dataset.append(np_img)
+            dataset.append(img)
             labels.append(label)
 
         class_idx += 1
+        
+    shuffle = np.random.permutation(len(dataset))
+    dataset = np.array(dataset)[shuffle]
+    labels = np.array(labels)[shuffle]
 
-    if not val:
-      return np.array(dataset)[:-50], np.array(labels)[:-50]
-    else:
-      return np.array(dataset)[-50:], np.array(labels)[-50:]
+    return dataset, labels
+
+
+def augmentation(img: Image.Image) -> Image.Image:
+    mark = [0, 1]
+    if np.random.choice(mark) == 1:
+        img = ImageOps.flip(img)
+    if np.random.choice(mark) == 1:
+        img = ImageOps.mirror(img)
+
+    color_img = ImageEnhance.Color(img)
+    change = np.random.rand() / 2.0 + 0.75
+    img = color_img.enhance(change)
+
+    return img
+
+
+def make_dataset(train=True, val=False) -> tuple:
+    images, labels = image_files(train)
+
+    dataset = []
+    answers = []
+    if val:
+        images = images[-50:]
+        labels = labels[-50:]
+
+        for image, label in zip(images, labels):
+            pil_img = Image.open(IMAGE_DIR + image)
+            pil_img = pil_img.resize([224, 224])
+            np_img = np.asanyarray(pil_img, dtype=np.float32)
+            np_img /= 255.0
+            dataset.append(np_img)
+            answers.append(label)
+        
+        return dataset, answers
+
+
+    for image, label in zip(images, labels):
+        pil_img = Image.open(IMAGE_DIR + image)
+        pil_img = pil_img.resize([224, 224])
+
+        for i in range(10):
+            pil_img = augmentation(pil_img)
+
+            np_img = np.asanyarray(pil_img, dtype=np.float32)
+            np_img /= 255.0
+            dataset.append(np_img)
+            answers.append(label)
+    
+    return dataset, answers
+
 
 
 def generate_dataset(batch_size: int, train=True, val=False):
     dataset, labels = make_dataset(train)
-    perm = np.random.permutation(len(labels))
-    dataset, labels = dataset[perm], labels[perm]
 
     bt_dataset = []
     bt_labels = []
@@ -62,12 +101,3 @@ def generate_dataset(batch_size: int, train=True, val=False):
         else:
             bt_dataset.append(data)
             bt_labels.append(label)
-
-
-if __name__ == '__main__':
-    print(len(make_dataset(False)[0]))
-    data = generate_dataset(50, False)
-    for d, l in data:
-        print(d.shape)
-        print(l.shape)
-        break

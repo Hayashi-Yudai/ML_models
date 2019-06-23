@@ -131,31 +131,31 @@ class ACoL:
             self.validation(sess)
 
     def validation(self, sess):
-      dataset = prepare_data.generate_dataset(self.batch_size, train=False, val=True)
-      for data, _ in dataset:
-        origin = data
-        res = sess.run(
-          self.output,
-          feed_dict={
-            self.X: data,
-            self.is_training: None 
-          }
-        )
-        break
+        dataset = prepare_data.generate_dataset(self.batch_size, train=False, val=True)
+        for data, _ in dataset:
+            origin = data
+            res = sess.run(
+            self.output,
+            feed_dict={
+                self.X: data,
+                self.is_training: None 
+            }
+            )
+            break
 
-      res = res[0]
-      space = int((16*14 - 2) / (14 - 1))
-      x = [space*i for i in range(14)]
-      y = [space*i for i in range(14)]
-      x[-1] = 223
-      y[-1] = 223
-      f = interpolate.interp2d(x, y, res)
-      xx = [i for i in range(224)]
-      yy = [i for i in range(224)]
-      res = f(xx, yy)
+        res = res[0]
+        space = int((16*14 - 2) / (14 - 1))
+        x = [space*i for i in range(14)]
+        y = [space*i for i in range(14)]
+        x[-1] = 223
+        y[-1] = 223
+        f = interpolate.interp2d(x, y, res)
+        xx = [i for i in range(224)]
+        yy = [i for i in range(224)]
+        res = f(xx, yy)
 
-      plt.figure()
-      plt.imshow((origin[0]*255).astype(np.int16))
-      plt.imshow(res, cmap='seismic', alpha=0.3)
-      plt.colorbar()
-      plt.show()
+        plt.figure()
+        plt.imshow((origin[0]*255).astype(np.int16))
+        plt.imshow(res, cmap='seismic', alpha=0.3)
+        plt.colorbar()
+        plt.show()
