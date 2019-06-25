@@ -6,10 +6,12 @@ from metrics import ArcFace
 
 weight_decay = 1e-4
 
-def vgg50_arcface():
+def resnet50_arcface():
     resnet50 = tf.keras.applications.ResNet50(
         input_shape=[112, 112, 3], include_top=False
     )
+    for layer in resnet50.layers:
+        layer.trainable = False
 
     inputs = resnet50.input
     y = Input(shape=(1000,))
@@ -26,4 +28,4 @@ def vgg50_arcface():
 
 
 if __name__ ==  "__main__":
-    model = vgg50_arcface()
+    model = resnet50_arcface()
