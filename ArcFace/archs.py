@@ -20,7 +20,7 @@ def vgg50_arcface():
     x = Dense(512, kernel_initializer="he_normal")(x)
     x = BatchNormalization()(x)
 
-    output = ArcFace(10, regularizer=tf.keras.regularizers.l2(weight_decay))([x, y])
+    output = ArcFace(1000, regularizer=tf.keras.regularizers.l2(weight_decay))([x, y])
 
     return tf.keras.Model([inputs, y], output)
 
