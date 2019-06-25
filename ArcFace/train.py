@@ -2,39 +2,33 @@ from PIL import Image
 import os
 import numpy as np
 from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.datasets import mnist
+import tensorflow as tf
 
 from archs import resnet50_arcface
+from prepare_data import make_dataset
 
 
 def main():
-    imgs = []
-    labels = []
+    imgs, labels = make_dataset(10)
 
-    images = os.listdir("/Users/wantedly150/Downloads/Images/")
-    for img in images:
-        if not "jpg" in img: continue
-        pil_x = Image.open("/Users/wantedly150/Downloads/Images/" + img)
-        pil_x = pil_x.resize((112, 112))
-        np_x = np.asarray(pil_x) / 255.0
-        if np_x.shape != (112, 112, 3):
-            continue
-    
-        label = [0] * 1000
-        num = int(img.split("-")[1].split(".")[0])
-        label[num] = 1
-        imgs.append(np_x)
-        labels.append(label)
+    shuffle_idx = np.random.permutation(500)
+    imgs = np.array(imgs)[shuffle_idx]
+    labels = np.array(labels)[shuffle_idx]
 
-    model = resnet50_arcface()
+    X, X_test = imgs[:-200], imgs[-200:]
+    y, y_test = labels[:-200], labels[-200:]
+
+    model = resnet50_arcface(10)
     model.compile(loss="categorical_crossentropy",
-        optimizer=Adam(lr=0.01),
+        optimizer=Adam(lr=0.1),
         metrics=["accuracy"]
     )
     model.summary()
-    model.fit([imgs, labels], [labels],
-        validation_data=([imgs, labels], [labels]),
+    model.fit([X, y], y,
+        validation_data=([X_test, y_test], y_test),
         batch_size=50,
-        epochs=5,
+        epochs=500,
         verbose=1
     )
 
