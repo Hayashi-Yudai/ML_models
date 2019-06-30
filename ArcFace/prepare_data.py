@@ -2,40 +2,50 @@ import numpy as np
 from PIL import Image, ImageOps, ImageEnhance
 import os
 
-def make_dataset(data_num):
-    imgs = []
-    labels = []
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
-    images = os.listdir("/Users/wantedly150/Downloads/Images/")
-    for num, img in enumerate(images[:data_num]):
-        if not "jpg" in img: continue
-        pil_x = Image.open("/Users/wantedly150/Downloads/Images/" + img)
-        if pil_x.size[0] < pil_x.size[1]:
-            pil_x = pil_x.rotate(90)
-        pil_x = pil_x.resize((460, 280))
 
-        label = [0] * data_num
-        #num = int(img.split("-")[1].split(".")[0])
-        label[num] = 1
-        mark = [0, 1]
-        for _ in range(50):
-            if np.random.choice(mark) == 1:
-                pil_x = ImageOps.flip(pil_x)
-            if np.random.choice(mark) == 1:
-                pil_x = ImageOps.mirror(pil_x)
-            
-            color_img = ImageEnhance.Color(pil_x)
-            change = np.random.rand() / 2.0 + 0.75
-            pil_x = color_img.enhance(change)
-
-            top = np.random.rand() * 10
-            left = np.random.rand() * 10
-            pil_x = pil_x.crop((top, left,
-                              top + 450, left + 270))
-                
-            np_x = np.asarray(pil_x) / 255.0
-            if len(np_x.shape) != 3: continue
-            imgs.append(np_x)
-            labels.append(label)
+class ArcFaceImageGenerator(ImageDataGenerator):
+    def __init__(self, **kwargs):
+        super(ArcFaceImageGenerator, self).__init__(**kwargs)
     
-    return imgs, labels
+    def flow_from_directory(self, directory, target_size, batch_size, class_mode):
+        batches = super().flow_from_directory(directory, 
+            target_size = target_size,
+            batch_size = batch_size,
+            class_mode = class_mode
+        )
+        while True:
+            inputs, outputs = next(batches)
+            yield [inputs, outputs], outputs
+
+
+def preprocessing(x):
+    x -= 127.5
+    x /= 128
+    
+    return x
+
+def generate_images(directory, batch_size):
+    train_datagen = ArcFaceImageGenerator(
+        preprocessing_function=preprocessing,
+        rescale=1.0/255,
+        shear_range=0.1,
+        zoom_range=0.05,
+        horizontal_flip=True,
+        vertical_flip=True,
+        width_shift_range=0.04,
+        height_shift_range=0.04
+    )
+
+    train_generator = train_datagen.flow_from_directory(
+        directory,
+        target_size=(130, 220),
+        batch_size=batch_size,
+        class_mode="categorical"
+    )
+
+    return train_generator
+
+if __name__ == "__main__":
+    pass
