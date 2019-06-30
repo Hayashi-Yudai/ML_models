@@ -16,9 +16,9 @@ def parse_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-pp", "--param_path",
-                        default="./lab-cardimage-match/params", type=str)
-    parser.add_argument('--epochs', default=100, type=int)
-    parser.add_argument('-b', '--batch_size', default=50, type=int)
+                        default="./params", type=str)
+    parser.add_argument('--epochs', default=10, type=int)
+    parser.add_argument('-b', '--batch_size', default=10, type=int)
     parser.add_argument('--optimizer', default='Adam', choices=['Adam', 'SGD'])
     parser.add_argument('--lr', '--learning_rate', default=1e-2, type=float)
     parser.add_argument('--decay', default=1e-4, type=float)
@@ -60,18 +60,21 @@ def main(args):
         save_best_only=True,
         mode="auto"
     )
-    model = vgg16_arcface(num_class, m, decay)
-    model.compile(loss="categorical_crossentropy",
-                  optimizer=Adam(lr=lr),
-                  metrics=["accuracy"]
-                  )
+    n_classes = 10
+    penalty = 0.5
+    trainfile = "/home/yudai/Documents/Python/lab-cardimage-match/lab-cardimage-match/sample-images"
+    validationfile = "/home/yudai/Documents/Python/lab-cardimage-match/lab-cardimage-match/validation-images"
+    train = generate_images(trainfile, 10)
+    val = generate_images(validationfile, 10)
+
+    model = vgg16_arcface(n_classes, penalty, 1e-4)
     model_json = model.to_json()
     with open(f"{dir_name}/model_structure.json", "w") as f:
         f.write(model_json)
-    # model.summary()
+    model.summary()
 
-    train_generator = generate_images("sample-images", batch)
-    val_generator = generate_images("validation_images", 201)
+    train_generator = generate_images('/home/yudai/Pictures/raw-img/train', batch)
+    val_generator = generate_images('/home/yudai/Pictures/raw-img/validation', 201)
     history = model.fit_generator(
         train_generator,
         steps_per_epoch=20,
