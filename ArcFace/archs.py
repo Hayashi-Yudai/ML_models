@@ -4,24 +4,23 @@ from tensorflow.keras.layers import (BatchNormalization, Dropout, Flatten,
 
 from metrics import ArcFace
 
-weight_decay = 1e-4
-
-def resnet50_arcface(n_class):
-    resnet50 = tf.keras.applications.ResNet50(
-        input_shape=[270, 450, 3], include_top=False
+def vgg16_arcface(n_class, m, decay):
+    vgg16 = tf.keras.applications.VGG16(
+        input_shape=[130, 220, 3], include_top=False
     )
-    for layer in resnet50.layers:
+    for layer in vgg16.layers:
         layer.trainable = False
 
-    inputs = resnet50.input
+    inputs = vgg16.input
     y = Input(shape=(n_class,))
-    x = resnet50.output
+    x = vgg16.output
     x = BatchNormalization()(x)
     x = Dropout(rate=0.5)(x)
     x = Flatten()(x)
-    x = Dense(512, kernel_initializer="he_normal")(x)
+    x = Dense(512, kernel_initializer="he_normal",
+                kernel_regularizer=tf.keras.regularizers.l2(decay))(x)
     x = BatchNormalization()(x)
 
-    output = ArcFace(n_class, regularizer=tf.keras.regularizers.l2(weight_decay))([x, y])
-
+    output = ArcFace(n_class, m=m, regularizer=tf.keras.regularizers.l2(decay))([x, y])
+    
     return tf.keras.Model([inputs, y], output)
