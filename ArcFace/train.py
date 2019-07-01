@@ -58,28 +58,24 @@ def main(args):
         monitor="val_loss",
         verbose=1,
         save_best_only=True,
+        save_weights_only=True,
         mode="auto"
     )
     n_classes = 10
     penalty = 0.5
-    trainfile = "/home/yudai/Documents/Python/lab-cardimage-match/lab-cardimage-match/sample-images"
-    validationfile = "/home/yudai/Documents/Python/lab-cardimage-match/lab-cardimage-match/validation-images"
+    trainfile = "/Users/wantedly150/Documents/lab-cardimage-match/lab-cardimage-match/sample-images"
+    validationfile = "/Users/wantedly150/Documents/lab-cardimage-match/lab-cardimage-match/validation-images"
     train = generate_images(trainfile, 10)
     val = generate_images(validationfile, 10)
 
     model = vgg16_arcface(n_classes, penalty, 1e-4)
-    model_json = model.to_json()
-    with open(f"{dir_name}/model_structure.json", "w") as f:
-        f.write(model_json)
     model.summary()
 
-    train_generator = generate_images('/home/yudai/Pictures/raw-img/train', batch)
-    val_generator = generate_images('/home/yudai/Pictures/raw-img/validation', 201)
     history = model.fit_generator(
-        train_generator,
+        train,
         steps_per_epoch=20,
         epochs=epochs,
-        validation_data=val_generator,
+        validation_data=val,
         validation_steps=1,
         callbacks=[callback]
     )

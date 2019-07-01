@@ -9,7 +9,7 @@ from prepare_data import generate_images
 
 n_classes = 10
 penalty = 0.5
-trainfile = "/home/yudai/Documents/Python/lab-cardimage-match/lab-cardimage-match/sample-images"
+trainfile = "/home/yudai/lab-cardimage-match/lab-cardimage-match/sample-images"
 validationfile = "/home/yudai/Documents/Python/lab-cardimage-match/lab-cardimage-match/validation-images"
 #trainfile = "/home/yudai/Pictures/raw-img/train"
 #validationfile = "/home/yudai/Pictures/raw-img/validation"
