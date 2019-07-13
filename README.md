@@ -30,7 +30,7 @@ $ pip install -r requirements.txt
 
 ## Usage
 
-How to use each model is written in README in the each models. Basically you can training with
+How to use each model is written in README in the each model. Basically you can training with
 
 ```
 $ python train.py $(options)
