@@ -74,6 +74,8 @@ def ACoL(args):
 
 	for layer in vgg16.layers:
 		layer.trainable = False
+		if "kernel_regularizer" in layer.__dict__:
+			layer.kernel_regularizer = tf.keras.regularizers.l2(0.001)
 
 	x = vgg16.output	# (?, 7, 7, n_classes)
 
