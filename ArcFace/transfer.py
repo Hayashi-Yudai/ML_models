@@ -1,40 +1,56 @@
-import os
-import datetime
-import numpy as np
-from tensorflow.keras.optimizers import Adam, SGD
 import tensorflow as tf
-
-from model.archs import vgg16_arcface
+from tensorflow.keras.layers import (BatchNormalization, Dropout, Flatten,
+                                    Dense, Input, Softmax, Lambda)
+from tensorflow.keras.backend import l2_normalize, variable, clip, epsilon
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.models import model_from_json, load_model
+import numpy as np
+from model.archs import ArcFace
 from model.prepare_data import generate_images
+
+import argparse
+import datetime
+import pandas as pd
+import os
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("-pp", "--param_path", default="./lab-cardimage-match/params", type=str)
+    parser.add_argument("-pp", "--param_path", default="./params", type=str)
     parser.add_argument('--epochs', default=100, type=int)
     parser.add_argument('-b', '--batch_size', default=10, type=int)
     parser.add_argument('--optimizer', default='Adam', choices=['Adam', 'SGD'])
     parser.add_argument('--lr', '--learning_rate', default=1e-2, type=float)
     parser.add_argument('--decay', default=1e-4, type=float)
     parser.add_argument('--backbone', default="VGG16", type=str)
-    parser.add_argument('--fine', default="", type=str)
     args = parser.parse_args()
 
     return args
 
-def main(args):
+def vgg16_arcface(params):
+    base_url = f"./params/{params}/"
+    model = load_model(
+        base_url + "params.hdf5",
+        custom_objects={"ArcFace" : ArcFace(m=0.5)}
+    )
+
+    return model
+
+def transfer_learning(params, args):
     dir_name = args.param_path + "/{0:%Y%m%d-%H%M%S}".format(datetime.datetime.now())
-    params_base = "./lab-cardimage-match/params/"
     os.makedirs(dir_name)
     epochs = args.epochs
     batch = args.batch_size
+    opt = args.optimizer
     lr = args.lr
     decay = args.decay
+    m = args.penalty
+    enhance = args.enhance
     backbone = args.backbone
-    fine_tune = None if args.fine == "" else params_base + args.fine + "/params.hdf5"
 
     num_class = 10
-    m = 0.0
+    
 
     filepath = f"{dir_name}/params.hdf5"
     with open(f"{dir_name}/info.txt", "w") as f:
@@ -45,6 +61,7 @@ def main(args):
         f.write(f"penalty: {m}\n")
         f.write(f"optimizer: {opt}\n")
         f.write(f"decay rate: {decay}\n")
+        f.write(f"enhancement: {enhance}\n")
         f.write(f"backbone network: {backbone}\n")
     
     callback = tf.keras.callbacks.ModelCheckpoint(
@@ -54,30 +71,29 @@ def main(args):
         save_best_only=True,
         mode="auto"
     )
-    model = vgg16_arcface(num_class, m, decay, fine_tune)
+    model = vgg16_arcface(params)
     model.compile(
         optimizer=Adam(0.01),
         loss="categorical_crossentropy",
         metrics=["accuracy"]
     )
+    
     model.summary()
     
-    train_generator = generate_images("./sample-images", batch)
-    val_generator = generate_images("./validation-images", 201)
+    train_generator = generate_images("../../Images", batch)
+    val_generator = generate_images("../../Val-images", 201)
     history = model.fit_generator(
        train_generator,
-        steps_per_epoch=20,
+        steps_per_epoch=30,
         epochs=epochs,
         validation_data=val_generator,
-        validation_steps=8,
-        callbacks=[callback, csvLogger]
+        validation_steps=1,
+        callbacks=[callback]
     )
     df = pd.DataFrame({"val_loss" : history.history["val_loss"], "val_acc" : history.history["val_acc"], 
                        "loss" : history.history["loss"], "acc" : history.history["acc"]})
     df.to_csv(dir_name + "/history.csv", index=False)
-    
 
 if __name__ == "__main__":
     args = parse_args()
-    main(args)
-
+    transfer_learning("", args)
