@@ -1,6 +1,7 @@
 import os
 import numpy as np
 from PIL import Image, ImageOps, ImageEnhance
+import tensorflow as tf
 
 IMAGE_DIR = '/home/yudai/Pictures/raw-img'
 CLASS_NUM = 10
@@ -101,3 +102,34 @@ def generate_dataset(batch_size: int, train=True, val=False):
         else:
             bt_dataset.append(data)
             bt_labels.append(label)
+
+####################################################
+### Keras
+####################################################
+def preprocessing(x):
+    return (x - 127.5) / 128
+
+def generate_images(directory, batch_size, train=True):
+    if train:
+        datagen = tf.keras.preprocessing.image.ImageDataGenerator(
+            preprocessing_function=preprocessing,
+            shear_range=0.3,
+            zoom_range=0.1,
+            rotation_range=10,
+            fill_mode="constant",
+            width_shift_range=0.05,
+            height_shift_range=0.05,
+        )
+    else:
+        datagen = tf.keras.preprocessing.image.ImageDataGenerator(
+            preprocessing_function=preprocessing
+        )
+
+    generator = datagen.flow_from_directory(
+        directory,
+        target_size=(224, 224),
+        batch_size=batch_size,
+        class_mode="categorical"
+    )
+
+    return generator
