@@ -1,4 +1,5 @@
 import numpy as np
+import imgaug.augmenters as iaa
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 
@@ -12,8 +13,15 @@ class ArcFaceImageGenerator(ImageDataGenerator):
             batch_size = batch_size,
             class_mode = class_mode
         )
+        seq = iaa.Sequential([
+            iaa.GaussianBlur(sigma=(0, 3.0)),
+            #iaa.MotionBlur(k=(3, 10)),
+            iaa.ChannelShuffle(p=0.5),
+            iaa.Add(value=(-0.3, 0.3))
+        ])
         while True:
             inputs, outputs = next(batches)
+            inputs = seq.augment_images(inputs)
             yield [inputs, outputs], outputs
 
 
@@ -25,7 +33,7 @@ def preprocessing(x):
 
 def generate_images(directory, batch_size, train=True):
     if train:
-        datagen= ArcFaceImageGenerator(
+        datagen = ArcFaceImageGenerator(
             preprocessing_function=preprocessing,
             shear_range=0.1,
             zoom_range=0.05,
@@ -35,12 +43,13 @@ def generate_images(directory, batch_size, train=True):
             height_shift_range=0.04
         )
     else:
-        datagen = ArcFaceImageGenerator(preprocessing=preprocessing)
-
+        datagen = ArcFaceImageGenerator(
+            preprocessing_function=preprocessing,
+        )
 
     generator = datagen.flow_from_directory(
         directory,
-        target_size=(100, 100),
+        target_size=(130, 220),
         batch_size=batch_size,
         class_mode="categorical"
     )

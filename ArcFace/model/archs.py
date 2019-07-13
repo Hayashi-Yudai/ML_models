@@ -2,9 +2,12 @@ import tensorflow as tf
 from tensorflow.keras.layers import (BatchNormalization, Dropout, Flatten,
                                     Dense, Input, Softmax, Lambda, Layer)
 from tensorflow.keras.backend import (l2_normalize, clip, epsilon, softmax)
+from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.regularizers import l2, get
 from tensorflow.keras.models import load_model
+from tensorflow.keras.applications import VGG16, ResNet50
 import numpy as np
+import math
 import os
 
 class ArcFace(Layer):
@@ -40,26 +43,27 @@ class ArcFace(Layer):
         return (None, self.n_classes)
 
 
-def resnet50_arcface(args):
+def arcface_main(args):
     n_classes = args.n_classes
     penalty = args.penalty
     enhance = args.enhance
     dropout_rate = args.dropout
     decay = args.decay
 
-    resnet50 = tf.keras.applications.ResNet50(
+    backbone = VGG16 if args.backbone == "VGG16" else ResNet50
+    backbone = backbone(
         include_top=False, 
-        input_shape=(100, 100, 3), 
+        input_shape=(130, 220, 3), 
         classes=n_classes
     )
 
-    for layer in resnet50.layers:
+    for layer in backbone.layers:
         if "kernel_regularizer" in layer.__dict__:
             layer.kernel_regularizer = l2(decay)
 
     y = tf.keras.Input(shape=(n_classes,))
 
-    x = resnet50.output
+    x = backbone.output
     x = BatchNormalization()(x)
     x = Dropout(dropout_rate)(x)
     x = Flatten()(x)
@@ -67,11 +71,11 @@ def resnet50_arcface(args):
     x = BatchNormalization()(x)
     x = ArcFace(n_classes, enhance, penalty, l2(decay))([x, y])
 
-    model = tf.keras.Model(inputs=[resnet50.input, y], outputs=x)
-    if args.param_folder != "":
-        path_params = os.path.dirname(os.path.abspath(__file__)) + \
-            f"/../params/{args.param_folder}/params.hdf5"
-        model.load_weights(path_params)
+    model = tf.keras.Model(inputs=[backbone.input, y], outputs=x)
+
+    if args.use_param_folder != "":
+        base_url = os.path.dirname(os.path.abspath(__file__)) + \
+            f"/../params/{args.use_param_folder}/"
+        model.load_weights(base_url + "params.hdf5")
 
     return model
-    
