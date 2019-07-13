@@ -11,7 +11,7 @@ def get_parser():
     parser.add_argument('--epoch', type=int, default=100)
     parser.add_argument('--lr', '--learning_rate', type=float, default=0.001)
     parser.add_argument('--batch_size', type=int, default=20)
-    parser.add_argument('--threshold', type=float, default=0.9)
+    parser.add_argument('--threshold', type=float, default=0.85)
     parser.add_argument('--use_param', type=str, default="")
 
     return parser
@@ -44,10 +44,10 @@ def train(args):
 
     model = ACoL(args)
     if args.use_param != "":
-        model.load_weights("./params/test.h5")
+        model.load_weights(args.use_param)
 
     model.compile(
-        optimizer=tf.train.AdamOptimizer(),
+        optimizer=tf.train.AdamOptimizer(lr),
         loss="categorical_crossentropy",
         metrics=["accuracy"]
     )
