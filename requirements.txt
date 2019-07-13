@@ -1,6 +1,6 @@
-matplotlib==3.0.3
-numpy==1.16.2
-Pillow==5.4.1
-tensorflow-gpu==1.12.1
+tensorflow
+Pillow
 imgaug
+numpy
 scipy
+matplotlib
