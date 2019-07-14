@@ -1,6 +1,6 @@
 # ML Models
 
-[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
+[![MIT License](https://github.com/Hayashi-Yudai/ML_models/blob/master/LICENSE)](LICENSE)
 
 This repository implements various machine learning models with Python/Tensorflow. I treat mainly "Image processing" in it.
 
