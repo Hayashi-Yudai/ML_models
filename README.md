@@ -1,5 +1,7 @@
 # ML Models
 
+[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
+
 This repository implements various machine learning models with Python/Tensorflow. I treat mainly "Image processing" in it.
 
 |  Model  |              Paper               |
