@@ -8,7 +8,7 @@ import numpy as np
 def get_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--n_classes', type=int, default=10)
-    parser.add_argument('--trian_data', type=str, default="./")
+    parser.add_argument('--train_data', type=str, default="./")
     parser.add_argument('--validation_data', type=str, default="./")
     parser.add_argument('--epoch', type=int, default=100)
     parser.add_argument('--lr', '--learning_rate', type=float, default=0.001)
