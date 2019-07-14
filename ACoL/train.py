@@ -8,10 +8,13 @@ import numpy as np
 def get_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--n_classes', type=int, default=10)
+    parser.add_argument('--trian_data', type=str, default="./")
+    parser.add_argument('--validation_data', type=str, default="./")
     parser.add_argument('--epoch', type=int, default=100)
     parser.add_argument('--lr', '--learning_rate', type=float, default=0.001)
     parser.add_argument('--batch_size', type=int, default=20)
     parser.add_argument('--threshold', type=float, default=0.85)
+    parser.add_argument('--save_params', type=str, default="./")
     parser.add_argument('--use_param', type=str, default="")
 
     return parser
@@ -23,24 +26,24 @@ def train(args):
     epoch = args.epoch
 
     generator = prepare_data.generate_images(
-        "/home/yudai/Pictures/raw-img/train",
+        args.train_data,
         batch_size 
     )
     val_generator = prepare_data.generate_images(
-        "/home/yudai/Pictures/raw-img/validation",
+        args.validation_data,
         batch_size,
         train=False
     )
 
     callback = tf.keras.callbacks.ModelCheckpoint(
-        filepath="./params/test.h5",
+        filepath=args.save_params + "/params.h5",
         monitor="val_loss",
         verbose=1,
         save_best_only=True,
         save_weights_only=True,
         mode="auto"
     )
-    csvLogger = tf.keras.callbacks.CSVLogger("./params/training.log")
+    csvLogger = tf.keras.callbacks.CSVLogger(args.save_params + "/training.log")
 
     model = ACoL(args)
     if args.use_param != "":
