@@ -4,6 +4,12 @@ This is the implementation of ACoL by Python with Tensorflow. The original paper
 
 ## Network structure
 
+ACoL has two branches after VGG16 backbone to detect objects. To train this model, we use classifiers.
+
 ![Network structure](https://github.com/Hayashi-Yudai/ML_models/blob/master/Images/ACoL_network.png)
+
+The segmentation result introduced in the paper is following,
+
+![Segmentation results](https://github.com/Hayashi-Yudai/ML_models/blob/master/Images/ACoL_segmentation.png)
 
 Under construction
