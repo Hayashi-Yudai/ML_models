@@ -4,8 +4,6 @@ UNet is the semantic segmentation network proposed by O. Ronneberger, P. Fischer
 
 ## Network structure
 
-ArcFace adds a penalty to the normal ResNet50/100 output and separate the distance of each class. This network is used to face recognition.
-
 ![Network structure](https://github.com/Hayashi-Yudai/ML_models/blob/master/Images/UNet_network.png)
 
 In use of ArcFace, we use 512-dims vectors as embeddigs.
