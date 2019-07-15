@@ -2,17 +2,15 @@
 
 UNet is the semantic segmentation network proposed by O. Ronneberger, P. Fischer, and T. Brox in the [arXiv paper](https://arxiv.org/abs/1505.04597). This repository is the implementation of this model by the Python with the Tensorflow.
 
-## Dependencies
+## Network structure
 
-- Python 3.6.8
-- Tensorflow 1.12.0
+ArcFace adds a penalty to the normal ResNet50/100 output and separate the distance of each class. This network is used to face recognition.
 
-## Test
+![Network structure](https://github.com/Hayashi-Yudai/ML_models/blob/master/Images/UNet_network.png)
 
-Run
+In use of ArcFace, we use 512-dims vectors as embeddigs.
+![Example](https://github.com/Hayashi-Yudai/ML_models/blob/master/Images/UNet_segmentation.png)
 
-```bash
-python -m unittest
-```
+## How to train
 
-to test the codes.
+Under construction
