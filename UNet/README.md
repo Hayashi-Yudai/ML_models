@@ -6,7 +6,6 @@ UNet is the semantic segmentation network proposed by O. Ronneberger, P. Fischer
 
 ![Network structure](https://github.com/Hayashi-Yudai/ML_models/blob/master/Images/UNet_network.png)
 
-In use of ArcFace, we use 512-dims vectors as embeddigs.
 ![Example](https://github.com/Hayashi-Yudai/ML_models/blob/master/Images/UNet_segmentation.png)
 
 ## How to train
