@@ -128,61 +128,43 @@ def generate_data(input_images, teacher_images, batch_size):
 
 
 ####################################################################
-## Keras
+## New
 ####################################################################
-import tensorflow as tf
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
+import imgaug as iaa
+import numpy as np
+import os
 from PIL import Image
 
 
-def pre_img(x):
-    x = (x - 127.5) / 128
-    return x
-
-
-def pre_mask(x):
+def data_gen(train_data, seg_data, batch_size):
+    inputs = np.array(os.listdir(train_data))
+    shuffle = np.random.permutation(len(inputs))
+    batch = len(inputs) // batch_size
     identity = np.identity(2, dtype=np.int16)
-    x = identity[x]
 
-    return x
+    for b in np.array_split(inputs[shuffle], batch):
+        imgs = []
+        segs = []
+        for img_file in b:
+            img = Image.open(train_data + img_file).convert("RGB")
+            img = img.resize((572, 572))
+            img = np.asarray(img)
+            imgs.append(img)
 
+            seg = Image.open(seg_data + img_file.split(".")[0] + "-seg.png")
+            seg = seg.resize((572, 572))
+            seg = np.asarray(seg)
+            seg = identity[seg]
+            segs.append(seg)
 
-def generate_images(x, batch_size, mask=False, train=True):
-    seed = 42
-    if train:
-        datagen = ImageDataGenerator(
-            preprocessing_function=pre_mask if mask else pre_img,
-            shear_range=0.1,
-            zoom_range=0.05,
-            rotation_range=20,
-            fill_mode="constant",
-            width_shift_range=0.05,
-            height_shift_range=0.05,
-        )
-    else:
-        datagen = ImageDataGenerator(
-            preprocessing_function=pre_mask if mask else pre_img
-        )
-
-    generator = datagen.flow(x, batch_size=batch_size, seed=seed)
-
-    return generator
+        yield imgs, segs
 
 
 if __name__ == "__main__":
-    import os
-    import numpy as np
+    data = "./dataset/raw_images/"
+    seg = "./dataset/segmented_images/"
 
-    img = Image.open(
-        "./dataset/segmented_images/" + os.listdir("./dataset/segmented_images/")[0]
-    )
-    img = img.resize((572, 572))
-    img = np.asarray(img).reshape((1, 572, 572, 1))
-    img = img.astype(np.int16)
-    print(img.dtype)
-    """
-	gen = generate_images(img, batch_size=1, mask=True)
-
-	test = next(gen)
-	print(test.shape)
-	"""
+    gen = data_gen(data, seg, 1)
+    x, y = next(gen)
+    print(x[0].shape)
+    print(y[0].shape)
