@@ -10,15 +10,12 @@ from model.params_handler import parse_args
 def generate_model(args):
     params = args.use_param_folder
     base_url = "./lab-cardimage-match/params/" + params
-    model = load_model(
-        base_url + "/params.hdf5",
-        custom_objects={"ArcFace" : ArcFace}
-    )
+    model = load_model(base_url + "/params.hdf5", custom_objects={"ArcFace": ArcFace})
 
     model = tf.keras.Model(model.input, model.get_layer("dense").output)
 
     return model
-    
+
 
 def main(args, img):
     img = Image.open(img).convert("RGB")

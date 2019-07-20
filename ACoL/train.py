@@ -7,15 +7,15 @@ import numpy as np
 
 def get_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--n_classes', type=int, default=10)
-    parser.add_argument('--train_data', type=str, default="./")
-    parser.add_argument('--validation_data', type=str, default="./")
-    parser.add_argument('--epoch', type=int, default=100)
-    parser.add_argument('--lr', '--learning_rate', type=float, default=0.001)
-    parser.add_argument('--batch_size', type=int, default=20)
-    parser.add_argument('--threshold', type=float, default=0.85)
-    parser.add_argument('--save_params', type=str, default="./")
-    parser.add_argument('--use_param', type=str, default="")
+    parser.add_argument("--n_classes", type=int, default=10)
+    parser.add_argument("--train_data", type=str, default="./")
+    parser.add_argument("--validation_data", type=str, default="./")
+    parser.add_argument("--epoch", type=int, default=100)
+    parser.add_argument("--lr", "--learning_rate", type=float, default=0.001)
+    parser.add_argument("--batch_size", type=int, default=20)
+    parser.add_argument("--threshold", type=float, default=0.85)
+    parser.add_argument("--save_params", type=str, default="./")
+    parser.add_argument("--use_param", type=str, default="")
 
     return parser
 
@@ -25,14 +25,9 @@ def train(args):
     lr = args.lr
     epoch = args.epoch
 
-    generator = prepare_data.generate_images(
-        args.train_data,
-        batch_size 
-    )
+    generator = prepare_data.generate_images(args.train_data, batch_size)
     val_generator = prepare_data.generate_images(
-        args.validation_data,
-        batch_size,
-        train=False
+        args.validation_data, batch_size, train=False
     )
 
     callback = tf.keras.callbacks.ModelCheckpoint(
@@ -41,7 +36,7 @@ def train(args):
         verbose=1,
         save_best_only=True,
         save_weights_only=True,
-        mode="auto"
+        mode="auto",
     )
     csvLogger = tf.keras.callbacks.CSVLogger(args.save_params + "/training.log")
 
@@ -52,7 +47,7 @@ def train(args):
     model.compile(
         optimizer=tf.train.AdamOptimizer(lr),
         loss="categorical_crossentropy",
-        metrics=["accuracy"]
+        metrics=["accuracy"],
     )
     print(model.summary())
     model.fit_generator(
@@ -61,11 +56,11 @@ def train(args):
         epochs=epoch,
         validation_data=val_generator,
         validation_steps=10,
-        callbacks=[csvLogger, callback]
+        callbacks=[csvLogger, callback],
     )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     tf.enable_eager_execution()
     parser = get_parser().parse_args()
     train(parser)

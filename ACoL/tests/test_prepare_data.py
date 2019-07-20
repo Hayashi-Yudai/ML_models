@@ -1,7 +1,8 @@
 import sys
 import os
+
 FILE = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(FILE + '/../')
+sys.path.append(FILE + "/../")
 
 import prepare_data
 import numpy as np
@@ -20,7 +21,7 @@ class TestLoadData(unittest.TestCase):
         self.assertEqual(type(label), np.ndarray)
 
         self.assertEqual(img[0].shape, (224, 224, 3))
-        self.assertEqual(label[0].shape, (10, ))
+        self.assertEqual(label[0].shape, (10,))
         self.assertEqual(sum(label[0]), 1)
 
     def test_generate_dataset(self):
@@ -34,12 +35,11 @@ class TestLoadData(unittest.TestCase):
     def test_validation_dataset(self):
         img, label = prepare_data.make_dataset(train=False, val=True)
         self.assertEqual(img[0].shape, (224, 224, 3))
-        self.assertEqual(label[0].shape, (10, ))
+        self.assertEqual(label[0].shape, (10,))
         self.assertEqual(sum(label[0]), 1)
 
 
-
-if __name__ == '__main__':
-    #unittest.main()
+if __name__ == "__main__":
+    # unittest.main()
     data, label = prepare_data.make_dataset(False)
     print(label)

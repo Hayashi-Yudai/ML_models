@@ -1,7 +1,15 @@
 import tensorflow as tf
-from tensorflow.keras.layers import (BatchNormalization, Dropout, Flatten,
-                                    Dense, Input, Softmax, Lambda, Layer)
-from tensorflow.keras.backend import (l2_normalize, clip, epsilon, softmax)
+from tensorflow.keras.layers import (
+    BatchNormalization,
+    Dropout,
+    Flatten,
+    Dense,
+    Input,
+    Softmax,
+    Lambda,
+    Layer,
+)
+from tensorflow.keras.backend import l2_normalize, clip, epsilon, softmax
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.regularizers import l2, get
 from tensorflow.keras.models import load_model
@@ -10,21 +18,26 @@ import numpy as np
 import math
 import os
 
+
 class ArcFace(Layer):
-    def __init__(self, n_classes=10, enhance=64.0, penalty=0.50, regularizer=None, **kwargs):
+    def __init__(
+        self, n_classes=10, enhance=64.0, penalty=0.50, regularizer=None, **kwargs
+    ):
         super(ArcFace, self).__init__(**kwargs)
         self.n_classes = n_classes
         self.s = enhance
-        self.m = penalty 
+        self.m = penalty
         self.regularizer = get(regularizer)
 
     def build(self, input_shape):
         super(ArcFace, self).build(input_shape[0])
-        self.W = self.add_weight(name='W',
-                                shape=(512, self.n_classes),
-                                initializer='glorot_uniform',
-                                trainable=True,
-                                regularizer=self.regularizer)
+        self.W = self.add_weight(
+            name="W",
+            shape=(512, self.n_classes),
+            initializer="glorot_uniform",
+            trainable=True,
+            regularizer=self.regularizer,
+        )
 
     def call(self, inputs):
         x, y = inputs
@@ -51,11 +64,7 @@ def arcface_main(args):
     decay = args.decay
 
     backbone = VGG16 if args.backbone == "VGG16" else ResNet50
-    backbone = backbone(
-        include_top=False, 
-        input_shape=(130, 220, 3), 
-        classes=n_classes
-    )
+    backbone = backbone(include_top=False, input_shape=(100, 100, 3), classes=n_classes)
 
     for layer in backbone.layers:
         if "kernel_regularizer" in layer.__dict__:
@@ -74,8 +83,10 @@ def arcface_main(args):
     model = tf.keras.Model(inputs=[backbone.input, y], outputs=x)
 
     if args.use_param_folder != "":
-        base_url = os.path.dirname(os.path.abspath(__file__)) + \
-            f"/../params/{args.use_param_folder}/"
+        base_url = (
+            os.path.dirname(os.path.abspath(__file__))
+            + f"/../params/{args.use_param_folder}/"
+        )
         model.load_weights(base_url + "params.hdf5")
 
     return model

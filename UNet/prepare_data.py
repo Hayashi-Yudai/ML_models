@@ -7,7 +7,7 @@ from PIL import Image, ImageOps, ImageEnhance
 
 
 def preprocess(img, seg, img_list, seg_list, n_class, onehot):
-  """
+    """
   Preprocess the image for training or validation
 
   Parameters
@@ -22,40 +22,40 @@ def preprocess(img, seg, img_list, seg_list, n_class, onehot):
   =======
   None
   """
-  for i in range(10):
-    img2 = img
-    seg2 = seg
-    mark = [0, 1]
-    if seg2 is not None:
-      if np.random.choice(mark) == 1:
-        img2 = ImageOps.flip(img2)
-        seg2 = ImageOps.flip(seg2)
-      if np.random.choice(mark) == 1:
-        img2 = ImageOps.mirror(img2)
-        seg2 = ImageOps.mirror(seg2)
+    for i in range(10):
+        img2 = img
+        seg2 = seg
+        mark = [0, 1]
+        if seg2 is not None:
+            if np.random.choice(mark) == 1:
+                img2 = ImageOps.flip(img2)
+                seg2 = ImageOps.flip(seg2)
+            if np.random.choice(mark) == 1:
+                img2 = ImageOps.mirror(img2)
+                seg2 = ImageOps.mirror(seg2)
 
-    color_img = ImageEnhance.Color(img2)   
-    change = np.random.rand() / 2.0 + 0.75
-    img2 = color_img.enhance(change)
+        color_img = ImageEnhance.Color(img2)
+        change = np.random.rand() / 2.0 + 0.75
+        img2 = color_img.enhance(change)
 
-    img2 = img2.resize([128, 128])
-    img2 = np.asarray(img2, dtype=np.float32)
-    if seg2 is not None:
-      seg2 = seg2.resize([128, 128])
-      seg2 = np.asarray(seg2, dtype=np.int16)
+        img2 = img2.resize([128, 128])
+        img2 = np.asarray(img2, dtype=np.float32)
+        if seg2 is not None:
+            seg2 = seg2.resize([128, 128])
+            seg2 = np.asarray(seg2, dtype=np.int16)
 
-    if onehot and seg is not None:
-      identity = np.identity(n_class, dtype=np.int16) 
-      seg2 = identity[seg2]
-    img_list.append(img2/255.0)
-    if seg2 is not None:
-      seg_list.append(seg2)
+        if onehot and seg is not None:
+            identity = np.identity(n_class, dtype=np.int16)
+            seg2 = identity[seg2]
+        img_list.append(img2 / 255.0)
+        if seg2 is not None:
+            seg_list.append(seg2)
 
-  return None
+    return None
 
 
 def load_data(image_dir, seg_dir, n_class, train_val_rate, onehot=True):
-  """
+    """
   load images and segmented images.
 
   Parameters
@@ -79,32 +79,32 @@ def load_data(image_dir, seg_dir, n_class, train_val_rate, onehot=True):
   training/validation (segmented) images are the list of np.ndarray whose shape
   is (128, 128, 3) (row image) and (128, 128, n_class) (segmented image)
   """
-  row_img = []
-  segmented_img = []
-  images = os.listdir(image_dir)
-  random.shuffle(images)
-  for img in images:
-    if img.endswith('.png') or img.endswith('.jpg'):
-      split_name = os.path.splitext(img)
-      img = Image.open(os.path.join(image_dir, img))
-      if seg_dir is not None:
-        seg = Image.open(os.path.join(seg_dir, split_name[0] + '-seg' + split_name[1]))
-      else:
-        seg = None
+    row_img = []
+    segmented_img = []
+    images = os.listdir(image_dir)
+    random.shuffle(images)
+    for img in images:
+        if img.endswith(".png") or img.endswith(".jpg"):
+            split_name = os.path.splitext(img)
+            img = Image.open(os.path.join(image_dir, img))
+            if seg_dir is not None:
+                seg = Image.open(
+                    os.path.join(seg_dir, split_name[0] + "-seg" + split_name[1])
+                )
+            else:
+                seg = None
 
-      preprocess(img, seg, row_img, segmented_img, n_class, onehot=onehot)
-  
-  train_val_border = int(len(row_img) * train_val_rate)
-  train_data = row_img[: train_val_border], \
-                segmented_img[: train_val_border]
-  validation_data = row_img[train_val_border:],\
-                    segmented_img[train_val_border:]
+            preprocess(img, seg, row_img, segmented_img, n_class, onehot=onehot)
 
-  return train_data, validation_data
+    train_val_border = int(len(row_img) * train_val_rate)
+    train_data = row_img[:train_val_border], segmented_img[:train_val_border]
+    validation_data = row_img[train_val_border:], segmented_img[train_val_border:]
+
+    return train_data, validation_data
 
 
 def generate_data(input_images, teacher_images, batch_size):
-  """
+    """
   generate the pair of the raw image and segmented image.
 
   Parameters
@@ -116,14 +116,73 @@ def generate_data(input_images, teacher_images, batch_size):
   Returns
   =======
   """
-  batch_num = math.ceil(len(input_images) / batch_size)
-  input_images = np.array_split(input_images, batch_num)
-  if np.any(teacher_images is None):
-    teacher_images = np.zeros(batch_num)
-  else:
-    teacher_images = np.array_split(teacher_images, batch_num)
+    batch_num = math.ceil(len(input_images) / batch_size)
+    input_images = np.array_split(input_images, batch_num)
+    if np.any(teacher_images is None):
+        teacher_images = np.zeros(batch_num)
+    else:
+        teacher_images = np.array_split(teacher_images, batch_num)
 
-  for i in range(batch_num):
-    yield input_images[i], teacher_images[i]
+    for i in range(batch_num):
+        yield input_images[i], teacher_images[i]
 
-    
+
+####################################################################
+## Keras
+####################################################################
+import tensorflow as tf
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from PIL import Image
+
+
+def pre_img(x):
+    x = (x - 127.5) / 128
+    return x
+
+
+def pre_mask(x):
+    identity = np.identity(2, dtype=np.int16)
+    x = identity[x]
+
+    return x
+
+
+def generate_images(x, batch_size, mask=False, train=True):
+    seed = 42
+    if train:
+        datagen = ImageDataGenerator(
+            preprocessing_function=pre_mask if mask else pre_img,
+            shear_range=0.1,
+            zoom_range=0.05,
+            rotation_range=20,
+            fill_mode="constant",
+            width_shift_range=0.05,
+            height_shift_range=0.05,
+        )
+    else:
+        datagen = ImageDataGenerator(
+            preprocessing_function=pre_mask if mask else pre_img
+        )
+
+    generator = datagen.flow(x, batch_size=batch_size, seed=seed)
+
+    return generator
+
+
+if __name__ == "__main__":
+    import os
+    import numpy as np
+
+    img = Image.open(
+        "./dataset/segmented_images/" + os.listdir("./dataset/segmented_images/")[0]
+    )
+    img = img.resize((572, 572))
+    img = np.asarray(img).reshape((1, 572, 572, 1))
+    img = img.astype(np.int16)
+    print(img.dtype)
+    """
+	gen = generate_images(img, batch_size=1, mask=True)
+
+	test = next(gen)
+	print(test.shape)
+	"""
