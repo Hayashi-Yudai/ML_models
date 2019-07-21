@@ -10,7 +10,7 @@ class conv_set:
             inputs
         )
         y = tf.keras.layers.Conv2D(self.filters, kernel_size=3, activation="relu")(y)
-
+        y = tf.keras.layers.BatchNormalization()(y)
         return y
 
 
