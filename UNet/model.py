@@ -68,5 +68,4 @@ def UNet(args):
 
 
 if __name__ == "__main__":
-    unet = UNet()
-    print(unet.summary())
+    pass
