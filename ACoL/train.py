@@ -61,6 +61,9 @@ def train(args):
 
 
 if __name__ == "__main__":
-    tf.enable_eager_execution()
+    config = tf.ConfigProto()
+    config.gpu_options.allow_growth = True
+    tf.keras.backend.set_session(tf.Session(config=config))
+
     parser = get_parser().parse_args()
     train(parser)
