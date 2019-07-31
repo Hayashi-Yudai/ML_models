@@ -42,5 +42,4 @@ if __name__ == "__main__":
     tf.keras.backend.set_session(tf.Session(config=config))
 
     args = get_parser().parse_args()
-    # train(args)
-    print(type(args))
+    train(args)

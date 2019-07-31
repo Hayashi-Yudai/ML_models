@@ -7,10 +7,12 @@ class conv_set:
         self.filters = filters
 
     def __call__(self, inputs: tf.Tensor) -> tf.Tensor:
-        y = tf.keras.layers.Conv2D(self.filters, kernel_size=3, activation="relu")(
-            inputs
-        )
-        y = tf.keras.layers.Conv2D(self.filters, kernel_size=3, activation="relu")(y)
+        y = tf.keras.layers.Conv2D(
+            self.filters, kernel_size=3, padding="SAME", activation="relu"
+        )(inputs)
+        y = tf.keras.layers.Conv2D(
+            self.filters, kernel_size=3, padding="SAME", activation="relu"
+        )(y)
         y = tf.keras.layers.BatchNormalization()(y)
         return y
 
@@ -35,7 +37,7 @@ def UNet(args: "argparse.Namespace") -> tf.keras.Model:
     n_classes: int = args.n_classes
     decay: float = args.l2
 
-    x = tf.keras.Input(shape=(572, 572, 3))
+    x = tf.keras.Input(shape=(224, 224, 3))
 
     # down sampling
     conv1 = conv_set(64)(x)
@@ -49,13 +51,13 @@ def UNet(args: "argparse.Namespace") -> tf.keras.Model:
     conv5 = conv_set(1024)(max_pool4)
 
     # up sampling
-    concat1 = updampling(512, 4)([conv5, conv4])
+    concat1 = updampling(512)([conv5, conv4])
     conv6 = conv_set(512)(concat1)
-    concat2 = updampling(256, 16)([conv6, conv3])
+    concat2 = updampling(256)([conv6, conv3])
     conv7 = conv_set(256)(concat2)
-    concat3 = updampling(128, 40)([conv7, conv2])
+    concat3 = updampling(128)([conv7, conv2])
     conv8 = conv_set(128)(concat3)
-    concat4 = updampling(64, 88)([conv8, conv1])
+    concat4 = updampling(64)([conv8, conv1])
     conv9 = conv_set(64)(concat4)
 
     output = tf.keras.layers.Conv2D(filters=n_classes, kernel_size=1)(conv9)
