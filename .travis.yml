@@ -10,5 +10,4 @@ install:
   - pip install flake8==3.7.8
   - pip install imgaug==0.2.9
 script:
-  - flake8 UNet/
   - black UNet/ --check --diff
