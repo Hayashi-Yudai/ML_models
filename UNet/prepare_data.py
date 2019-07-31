@@ -1,10 +1,11 @@
-import imgaug as iaa
 import numpy as np
 import os
 from PIL import Image
 
 
-def data_gen(train_data, seg_data, batch_size):
+def data_gen(
+    train_data: str, seg_data: str, batch_size: int
+) -> (np.ndarray, np.ndarray):
     inputs = np.array(os.listdir(train_data))
     batch = len(inputs) // batch_size
     identity = np.identity(2, dtype=np.int16)
@@ -16,12 +17,12 @@ def data_gen(train_data, seg_data, batch_size):
             segs = []
             for img_file in b:
                 img = Image.open(train_data + img_file).convert("RGB")
-                img = img.resize((572, 572))
+                img = img.resize((224, 224))
                 img = np.asarray(img) / 255.0
                 imgs.append(img)
 
                 seg = Image.open(seg_data + img_file.split(".")[0] + "-seg.png")
-                seg = seg.resize((388, 388))
+                seg = seg.resize((224, 224))
                 seg = np.asarray(seg)
                 seg = identity[seg]
                 segs.append(seg)
