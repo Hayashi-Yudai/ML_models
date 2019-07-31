@@ -1,11 +1,12 @@
+from typing import Optional
 import tensorflow as tf
 
 
 class conv_set:
-    def __init__(self, filters):
+    def __init__(self, filters: int):
         self.filters = filters
 
-    def __call__(self, inputs):
+    def __call__(self, inputs: tf.Tensor) -> tf.Tensor:
         y = tf.keras.layers.Conv2D(self.filters, kernel_size=3, activation="relu")(
             inputs
         )
@@ -15,11 +16,11 @@ class conv_set:
 
 
 class updampling:
-    def __init__(self, filters, cut):
+    def __init__(self, filters: int, cut: Optional[int] = 0):
         self.filters = filters
         self.cut = cut
 
-    def __call__(self, inputs):
+    def __call__(self, inputs: tf.Tensor) -> tf.Tensor:
         upconv = tf.keras.layers.Conv2DTranspose(
             self.filters, kernel_size=2, strides=2
         )(inputs[0])
@@ -30,9 +31,9 @@ class updampling:
         return concat
 
 
-def UNet(args):
-    n_classes = args.n_classes
-    decay = args.l2
+def UNet(args: "argparse.Namespace") -> tf.keras.Model:
+    n_classes: int = args.n_classes
+    decay: float = args.l2
 
     x = tf.keras.Input(shape=(572, 572, 3))
 

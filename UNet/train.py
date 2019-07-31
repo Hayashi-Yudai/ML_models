@@ -21,8 +21,8 @@ def get_parser():
     return parser
 
 
-def train(args):
-    lr = args.learning_rate
+def train(args: "argparse.Namespace"):
+    lr: float = args.learning_rate
 
     unet = model.UNet(args)
     unet.compile(
@@ -42,4 +42,5 @@ if __name__ == "__main__":
     tf.keras.backend.set_session(tf.Session(config=config))
 
     args = get_parser().parse_args()
-    train(args)
+    # train(args)
+    print(type(args))

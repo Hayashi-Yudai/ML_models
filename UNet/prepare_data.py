@@ -4,7 +4,9 @@ import os
 from PIL import Image
 
 
-def data_gen(train_data, seg_data, batch_size):
+def data_gen(
+    train_data: str, seg_data: str, batch_size: int
+) -> (np.ndarray, np.ndarray):
     inputs = np.array(os.listdir(train_data))
     batch = len(inputs) // batch_size
     identity = np.identity(2, dtype=np.int16)
