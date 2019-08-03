@@ -18,7 +18,7 @@ class conv_set:
         return y
 
 
-class updampling:
+class upsampling:
     def __init__(self, filters: int, cut: Optional[int] = 0):
         self.filters = filters
         self.cut = cut
@@ -52,13 +52,13 @@ def UNet(args: "argparse.Namespace") -> tf.keras.Model:
     conv5 = conv_set(1024)(max_pool4)
 
     # up sampling
-    concat1 = updampling(512)([conv5, conv4])
+    concat1 = upsampling(512)([conv5, conv4])
     conv6 = conv_set(512)(concat1)
-    concat2 = updampling(256)([conv6, conv3])
+    concat2 = upsampling(256)([conv6, conv3])
     conv7 = conv_set(256)(concat2)
-    concat3 = updampling(128)([conv7, conv2])
+    concat3 = upsampling(128)([conv7, conv2])
     conv8 = conv_set(128)(concat3)
-    concat4 = updampling(64)([conv8, conv1])
+    concat4 = upsampling(64)([conv8, conv1])
     conv9 = conv_set(64)(concat4)
 
     output = tf.keras.layers.Conv2D(filters=n_classes, kernel_size=1)(conv9)
