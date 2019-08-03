@@ -1,5 +1,6 @@
 import argparse
 import tensorflow as tf
+import tensorflow.keras.backend as K
 import model
 from prepare_data import data_gen
 
@@ -22,13 +23,24 @@ def get_parser():
     return parser
 
 
+def dice_coef(y_true, y_pred):
+    y_true = K.flatten(y_true)
+    y_pred = K.flatten(y_pred)
+    intersection = K.sum(y_true * y_pred)
+    return 2.0 * intersection / (K.sum(y_true) + K.sum(y_pred) + 1)
+
+
+def dice_coef_loss(y_true, y_pred):
+    return 1.0 - dice_coef(y_true, y_pred)
+
+
 def train(args: "argparse.Namespace"):
     lr: float = args.learning_rate
 
     unet = model.UNet(args)
     unet.compile(
         optimizer=tf.keras.optimizers.Adam(lr),
-        loss="binary_crossentropy",
+        loss=dice_coef_loss,
         metrics=["accuracy"],
     )
     unet.summary()
