@@ -22,12 +22,15 @@ You can use these models for training or validation.
 - Scipy
 - Matplotlib
 
-To install these libraries, execute following command.
-
-bash/Command prompt
-
+I am managing these libraries with pipenv. If you do not have pipenv, install with pip
+```bash
+pip install pipenv
 ```
-$ pip install -r requirements.txt
+You can see [latest document](https://docs.pipenv.org/en/latest/) to understand the usage more
+
+To install all libraries, you run
+```
+$ pipenv install
 ```
 
 ## Usage
@@ -35,8 +38,14 @@ $ pip install -r requirements.txt
 How to use each model is written in README in the each model. Basically you can training with
 
 ```
-$ python train.py $(options)
+$ pipenv run python train.py $(options)
 ```
+
+## Future Plans
+- Fix the test code with pytest. [issue](https://github.com/Hayashi-Yudai/ML_models/issues/42) (*Important*)
+    - Your contributions are welcome
+    - Test is broken... it's ironic, isn't it?
+- Modularize this repository to enable users to import whole models
 
 ## Licence
 
