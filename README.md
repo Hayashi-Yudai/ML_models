@@ -49,6 +49,6 @@ $ pipenv run python train.py $(options)
 
 ## Licence
 
-ML models is licenced under the MIT licence.
+"ML models" is licenced under the MIT licence.
 
 (C) Copyright 2019, Yudai Hayashi
