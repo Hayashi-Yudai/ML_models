@@ -62,11 +62,15 @@ def UNet(args: "argparse.Namespace") -> tf.keras.Model:
     conv9 = conv_set(64)(concat4)
 
     output = tf.keras.layers.Conv2D(filters=n_classes, kernel_size=1)(conv9)
+    output = tf.keras.layers.Softmax()(output)
 
     model = tf.keras.Model(inputs=x, outputs=output)
     for layer in model.layers:
         if "kernel_regularizer" in layer.__dict__:
             layer.kernel_regularizer = tf.keras.regularizers.l2(decay)
+
+    if args.weights != "":
+        model.load_weights(args.weights)
 
     return model
 

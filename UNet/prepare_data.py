@@ -36,3 +36,4 @@ if __name__ == "__main__":
 
     gen = data_gen(data, seg, 4)
     x, y = next(gen)
+    print(x.shape)
