@@ -10,6 +10,7 @@ class args:
     n_classes = 2
     l2 = 0.0
     weights = "./params/model.h5"
+    img = "/home/yudai/Pictures/raw-img/train/cat/207.jpeg"
 
 
 def prediction(img: np.ndarray) -> np.ndarray:
@@ -34,12 +35,12 @@ if __name__ == "__main__":
     config.gpu_options.allow_growth = True
     tf.keras.backend.set_session(tf.Session(config=config))
 
-    img_original = Image.open("./dataset/raw_images/cat-10.png").convert("RGB")
+    img_original = Image.open(args.img).convert("RGB")
     original_shape = img_original.size
 
     img = img_original.resize((224, 224))
     img = np.asarray(img)
-    img = (img - 127.5) / 128
+    img = img / 255.0
 
     pred = prediction(img.reshape(1, 224, 224, 3))
     pred = to_colormap(pred, original_shape)
