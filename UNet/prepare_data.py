@@ -1,6 +1,7 @@
 import numpy as np
 import os
 from PIL import Image
+import imgaug.augmenters as iaa
 
 
 def data_gen(
@@ -18,7 +19,17 @@ def data_gen(
             for img_file in b:
                 img = Image.open(train_data + img_file).convert("RGB")
                 img = img.resize((224, 224))
-                img = np.asarray(img) / 255.0
+                img = np.asarray(img)
+
+                seq = iaa.Sequential(
+                    [
+                        iaa.GaussianBlur(sigma=(0, 3.0)),
+                        iaa.LogContrast(gain=(0.5, 1.0)),
+                        iaa.ChannelShuffle(p=1.0),
+                    ]
+                )
+                img = seq.augment_images(img)
+                img = img / 255.0
                 imgs.append(img)
 
                 seg = Image.open(seg_data + img_file.split(".")[0] + "-seg.png")
