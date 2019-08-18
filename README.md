@@ -6,7 +6,7 @@ This repository implements various machine learning models with Python/Tensorflo
 
 |  Model  |              Paper               |       Status       |
 | :-----: | :------------------------------: | :----------------: |
-|  U-Net  | https://arxiv.org/abs/1505.04597 |        :x:         |
+|  U-Net  | https://arxiv.org/abs/1505.04597 | :white_check_mark: |
 |  ACoL   | https://arxiv.org/abs/1804.06962 | :white_check_mark: |
 | Arcface | https://arxiv.org/abs/1801.07698 | :white_check_mark: |
 
