@@ -17,7 +17,7 @@ def data_gen(
             imgs = []
             segs = []
             for img_file in b:
-                img = Image.open(train_data + img_file).convert("RGB")
+                img = Image.open(os.path.join(train_data, img_file)).convert("RGB")
                 img = img.resize((224, 224))
                 img = np.asarray(img)
 
@@ -32,7 +32,9 @@ def data_gen(
                 img = img / 255.0
                 imgs.append(img)
 
-                seg = Image.open(seg_data + img_file.split(".")[0] + "-seg.png")
+                seg = Image.open(
+                    os.path.join(seg_data, img_file.split(".")[0] + "-seg.png")
+                )
                 seg = seg.resize((224, 224))
                 seg = np.asarray(seg)
                 seg = identity[seg]
