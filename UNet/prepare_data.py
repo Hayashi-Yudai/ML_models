@@ -5,11 +5,11 @@ import imgaug.augmenters as iaa
 
 
 def data_gen(
-    train_data: str, seg_data: str, batch_size: int
+    train_data: str, seg_data: str, batch_size: int, n_classes: int
 ) -> (np.ndarray, np.ndarray):
     inputs = np.array(os.listdir(train_data))
     batch = len(inputs) // batch_size
-    identity = np.identity(2, dtype=np.int16)
+    identity = np.identity(n_classes, dtype=np.int16)
 
     while True:
         shuffle = np.random.permutation(len(inputs))

@@ -39,6 +39,7 @@ def dice_coef_loss(y_true, y_pred):
 
 def train(args: "argparse.Namespace"):
     lr: float = args.learning_rate
+    n_classes: int = args.n_classes
 
     unet = model.UNet(args)
     unet.compile(
@@ -56,7 +57,9 @@ def train(args: "argparse.Namespace"):
         verbose=1,
     )
 
-    generator = data_gen(args.train_data, args.validation_data, args.batch_size)
+    generator = data_gen(
+        args.train_data, args.validation_data, args.batch_size, n_classes
+    )
     unet.fit_generator(generator, steps_per_epoch=30, epochs=100, callbacks=[ckpt])
 
 
