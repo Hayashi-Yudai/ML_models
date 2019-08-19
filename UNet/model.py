@@ -73,7 +73,3 @@ def UNet(args: "argparse.Namespace") -> tf.keras.Model:
         model.load_weights(args.weights)
 
     return model
-
-
-if __name__ == "__main__":
-    pass
