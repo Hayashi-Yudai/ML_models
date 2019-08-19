@@ -41,12 +41,3 @@ def data_gen(
                 segs.append(seg)
 
             yield np.array(imgs), np.array(segs)
-
-
-if __name__ == "__main__":
-    data = "./dataset/raw_images/"
-    seg = "./dataset/segmented_images/"
-
-    gen = data_gen(data, seg, 4)
-    x, y = next(gen)
-    print(x.shape)
