@@ -3,3 +3,5 @@
 /*/*/__pycache__/
 /*/tests/__pycache__/
 /ACoL/vgg16/*
+.vscode
+.venv
