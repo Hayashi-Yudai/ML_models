@@ -66,9 +66,9 @@ def train(args: "argparse.Namespace"):
 
 
 if __name__ == "__main__":
-    config = tf.ConfigProto()
-    config.gpu_options.allow_growth = True
-    tf.keras.backend.set_session(tf.Session(config=config))
+    device = tf.config.experimental.list_physical_devices("GPU")
+    if device:
+        tf.config.experimental.set_memory_growth(device[0], True)
 
     args = get_parser().parse_args()
     train(args)
