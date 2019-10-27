@@ -28,7 +28,7 @@ def data_gen(
                         iaa.ChannelShuffle(p=1.0),
                     ]
                 )
-                img = seq.augment_images(img)
+                img = seq.augment_image(img)
                 img = img / 255.0
                 imgs.append(img)
 
@@ -37,7 +37,7 @@ def data_gen(
                 )
                 seg = seg.resize((224, 224))
                 seg = np.asarray(seg)
-                seg = identity[seg]
+                seg = identity[seg].astype(np.float32)
                 segs.append(seg)
 
             yield np.array(imgs), np.array(segs)
