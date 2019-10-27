@@ -89,7 +89,7 @@ def ACoL(args):
     # branch-B
     y = Adversarial(batch_size, threshold)([vgg16.output, featuresA, x])
     y, featuresB = subbranch()(y)
-    output = tf.keras.layers.Lambda(lambda x: tf.add(x[0], x[1]))([x, y])
+    output = tf.keras.layers.Add()([x, y])
 
     return tf.keras.Model(inputs=vgg16.input, outputs=output)
 
