@@ -45,7 +45,7 @@ def train(args):
         model.load_weights(args.use_param)
 
     model.compile(
-        optimizer=tf.train.AdamOptimizer(lr),
+        optimizer=tf.optimizers.Adam(lr),
         loss="categorical_crossentropy",
         metrics=["accuracy"],
     )
