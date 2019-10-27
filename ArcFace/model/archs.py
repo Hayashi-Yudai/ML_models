@@ -1,21 +1,8 @@
 import tensorflow as tf
-from tensorflow.keras.layers import (
-    BatchNormalization,
-    Dropout,
-    Flatten,
-    Dense,
-    Input,
-    Softmax,
-    Lambda,
-    Layer,
-)
+from tensorflow.keras.layers import BatchNormalization, Dropout, Flatten, Dense, Layer
 from tensorflow.keras.backend import l2_normalize, clip, epsilon, softmax
-from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.regularizers import l2, get
-from tensorflow.keras.models import load_model
 from tensorflow.keras.applications import VGG16, ResNet50
-import numpy as np
-import math
 import os
 
 

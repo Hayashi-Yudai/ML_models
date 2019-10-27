@@ -1,6 +1,5 @@
 import os
 import datetime
-import numpy as np
 from tensorflow.keras.optimizers import Adam, SGD
 import tensorflow as tf
 
