@@ -56,8 +56,15 @@ def main(args):
 
 
 if __name__ == "__main__":
-    device = tf.config.experimental.list_physical_devices("GPU")
-    tf.config.experimental.set_memory_growth(device[0], True)
+    if tf.__version__ >= "2.0.0":
+        device = tf.config.experimental.list_physical_devices("GPU")
+        if len(device) > 0:
+            for dev in device:
+                tf.config.experimental.set_memory_growth(dev, True)
+    else:
+        config = tf.ConfigProto()
+        config.gpu_options.allow_growth = True
+        tf.keras.backend.set_session(tf.Session(config=config))
 
     args = parse_args()
     main(args)
