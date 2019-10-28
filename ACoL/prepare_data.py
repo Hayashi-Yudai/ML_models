@@ -1,6 +1,3 @@
-import os
-import numpy as np
-from PIL import Image, ImageOps, ImageEnhance
 import tensorflow as tf
 import imgaug.augmenters as iaa
 
@@ -32,7 +29,7 @@ class AugmentImageGenerator(tf.keras.preprocessing.image.ImageDataGenerator):
         while True:
             inputs, outputs = next(batches)
             if train:
-                inputs = iaa.augment_images(inputs)
+                inputs = seq.augment_images(inputs)
 
             yield inputs, outputs
 

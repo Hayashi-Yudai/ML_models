@@ -1,8 +1,6 @@
-/UNet/params/*
-/*/__pycache__/
-/*/*/__pycache__/
-/*/tests/__pycache__/
-/ACoL/vgg16/*
+__pycache__
 .vscode
 .venv
 params
+*.pyc
+*.log

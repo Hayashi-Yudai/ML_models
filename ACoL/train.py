@@ -2,7 +2,6 @@ import argparse
 from model import ACoL
 import prepare_data
 import tensorflow as tf
-import numpy as np
 
 
 def get_parser():
@@ -45,7 +44,7 @@ def train(args):
         model.load_weights(args.use_param)
 
     model.compile(
-        optimizer=tf.train.AdamOptimizer(lr),
+        optimizer=tf.optimizers.Adam(lr),
         loss="categorical_crossentropy",
         metrics=["accuracy"],
     )
@@ -61,6 +60,15 @@ def train(args):
 
 
 if __name__ == "__main__":
-    tf.enable_eager_execution()
+    if tf.__version__ >= "2.0.0":
+        device = tf.config.experimental.list_physical_devices("GPU")
+        if len(device) > 0:
+            for dev in device:
+                tf.config.experimental.set_memory_growth(dev, True)
+    else:
+        config = tf.ConfigProto()
+        config.gpu_options.allow_growth = True
+        tf.keras.backend.set_session(tf.Session(config=config))
+
     parser = get_parser().parse_args()
     train(parser)
