@@ -45,11 +45,16 @@ class Adversarial(tf.keras.layers.Layer):
         max_idx = tf.argmax(branchA_end, axis=1)
 
         tmp = []
-        for bt in range(self.batch_size):
-            a = tf.reshape(interm[bt, :, :, max_idx[bt]], [7, 7, 1])
-            each = tf.tile(a, [1, 1, 512])
 
-            tmp.append(each)
+        # for bt in range(self.batch_size):
+        for bt in range(self.batch_size):
+            try:
+                a = tf.reshape(interm[bt, :, :, max_idx[bt]], [7, 7, 1])
+                each = tf.tile(a, [1, 1, 512])
+
+                tmp.append(each)
+            except:
+                break
 
         tmp = tf.stack(tmp)
         tmp = tf.where(tmp > self.threshold, tmp, tmp * 0)
@@ -57,6 +62,9 @@ class Adversarial(tf.keras.layers.Layer):
         adv = tf.subtract(vgg_end, tmp)
 
         return adv
+
+    def compute_output_shape(self, input_shape):
+        return (None, 7, 7, 512)
 
 
 def ACoL(args):
@@ -81,7 +89,7 @@ def ACoL(args):
     # branch-B
     y = Adversarial(batch_size, threshold)([vgg16.output, featuresA, x])
     y, featuresB = subbranch()(y)
-    output = tf.keras.layers.Lambda(lambda x: tf.add(x[0], x[1]))([x, y])
+    output = tf.keras.layers.Add()([x, y])
 
     return tf.keras.Model(inputs=vgg16.input, outputs=output)
 

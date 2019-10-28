@@ -1,4 +1,3 @@
-import numpy as np
 import imgaug.augmenters as iaa
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
