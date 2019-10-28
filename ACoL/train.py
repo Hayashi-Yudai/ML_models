@@ -2,7 +2,6 @@ import argparse
 from model import ACoL
 import prepare_data
 import tensorflow as tf
-import numpy as np
 
 
 def get_parser():
