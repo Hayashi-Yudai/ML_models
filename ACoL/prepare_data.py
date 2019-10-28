@@ -32,7 +32,7 @@ class AugmentImageGenerator(tf.keras.preprocessing.image.ImageDataGenerator):
         while True:
             inputs, outputs = next(batches)
             if train:
-                inputs = iaa.augment_images(inputs)
+                inputs = seq.augment_images(inputs)
 
             yield inputs, outputs
 
