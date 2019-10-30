@@ -44,3 +44,18 @@ def test_upsampling_output(setup):
 
     assert output1.shape == (1, 20, 20, 20)
     assert output2.shape == (1, 20, 20, 20)
+
+
+def test_unet(setup):
+    class params:
+        n_classes = 2
+        l2 = 0.001
+        weights = ""
+
+    args = params()
+    test_input = np.random.random((1, 224, 224, 3))
+
+    unet = model.UNet(args)
+    output = unet.predict(test_input)
+
+    assert output.shape == (1, 224, 224, args.n_classes)
