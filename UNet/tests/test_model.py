@@ -7,7 +7,7 @@ import pytest
 @pytest.fixture()
 def setup():
     devices = tf.config.experimental.list_physical_devices("GPU")
-    if len(devices) > 0:
+    if devices:
         for dev in devices:
             tf.config.experimental.set_memory_growth(dev, True)
 
