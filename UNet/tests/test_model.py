@@ -4,7 +4,7 @@ import tensorflow as tf
 import pytest
 
 
-@pytest.fixture()
+@pytest.fixture(scope="module")
 def setup():
     devices = tf.config.experimental.list_physical_devices("GPU")
     if devices:
