@@ -12,6 +12,16 @@ def setup():
             tf.config.experimental.set_memory_growth(dev, True)
 
 
+@pytest.fixture
+def params():
+    class p:
+        n_classes = 2
+        l2 = 0.01
+        weights = ""
+
+    return p()
+
+
 def test_layers_callable():
     conv_set = model.conv_set(filters=10)
     upsampling_1 = model.upsampling(filters=10)
@@ -46,16 +56,19 @@ def test_upsampling_output(setup):
     assert output2.shape == (1, 20, 20, 20)
 
 
-def test_unet(setup):
-    class params:
-        n_classes = 2
-        l2 = 0.001
-        weights = ""
-
-    args = params()
+def test_unet(setup, params):
     test_input = np.random.random((1, 224, 224, 3))
 
-    unet = model.UNet(args)
+    unet = model.UNet(params)
     output = unet.predict(test_input)
 
-    assert output.shape == (1, 224, 224, args.n_classes)
+    assert output.shape == (1, 224, 224, params.n_classes)
+
+
+def test_unet_regularizer(setup, params):
+    unet = model.UNet(params)
+
+    for layer in unet.layers:
+        if "kernel_regularizer" in layer.__dict__:
+            assert abs(float(layer.kernel_regularizer.l2) - params.l2) < 1e-6
+            assert abs(float(layer.kernel_regularizer.l1) - 0.0) < 1e-6
