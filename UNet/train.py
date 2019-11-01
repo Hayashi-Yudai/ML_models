@@ -1,8 +1,8 @@
 import argparse
 import tensorflow as tf
 import tensorflow.keras.backend as K
-from UNet import model
-from UNet.prepare_data import data_gen
+import model
+from prepare_data import data_gen
 import os
 
 
