@@ -15,7 +15,7 @@ You can use these models for training or validation.
 ## Requirements
 
 - Python 3.6>=
-- Tensorflow 1.12.0>=
+- Tensorflow 2.0.0>=
 - PIL
 - Imgaug
 - Numpy
@@ -38,7 +38,7 @@ $ pipenv install
 How to use each model is written in README in the each model. Basically you can training with
 
 ```
-$ pipenv run python train.py $(options)
+$ pipenv run python -m $(MODEL_NAME)/train $(options)
 ```
 
 ## Future Plans
