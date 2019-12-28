@@ -23,3 +23,9 @@ jobs:
         pipenv run test ./ACoL
         pipenv run test ./UNet
         pipenv run test ./ArcFace
+    - name: Check code by flake8
+      run : |
+        flake8 ./ACoL
+        flake8 ./ArcFace
+        flake8 ./UNet
+
