@@ -46,14 +46,13 @@ class Adversarial(tf.keras.layers.Layer):
 
         tmp = []
 
-        # for bt in range(self.batch_size):
         for bt in range(self.batch_size):
             try:
                 a = tf.reshape(interm[bt, :, :, max_idx[bt]], [7, 7, 1])
                 each = tf.tile(a, [1, 1, 512])
 
                 tmp.append(each)
-            except:
+            except Exception:
                 break
 
         tmp = tf.stack(tmp)
