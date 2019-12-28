@@ -1,10 +1,4 @@
-import sys
-import os
-
-FILE = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(FILE + "/../")
-
-import prepare_data
+import ACoL.prepare_data as prepare_data
 import numpy as np
 import unittest
 
