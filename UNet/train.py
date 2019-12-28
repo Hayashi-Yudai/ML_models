@@ -18,9 +18,8 @@ def get_parser():
         "--train_rate", type=float, default=0.8, help="ratio of training data"
     )
     parser.add_argument("--train_data", type=str, default="./dataset/raw_images/")
-    # TODO: make validation data.
     parser.add_argument(
-        "--validation_data", type=str, default="./dataset/segmented_images/"
+        "--segmented_data", type=str, default="./dataset/segmented_images/"
     )
     parser.add_argument("--batch_size", type=int, default=10)
     parser.add_argument("--l2", type=float, default=0.05, help="L2 regularization")
@@ -60,7 +59,7 @@ def train(args: "argparse.Namespace"):
         verbose=1,
     )
 
-    segmented_data = os.path.join(args.train_data, "../segmented_images")
+    segmented_data = args.segmented_data # os.path.join(args.train_data, "../segmented_images")
     generator = data_gen(args.train_data, segmented_data, args.batch_size, n_classes)
     unet.fit_generator(generator, steps_per_epoch=30, epochs=100, callbacks=[ckpt])
 
