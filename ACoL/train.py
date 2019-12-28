@@ -46,6 +46,7 @@ def train(args):
     model.compile(
         optimizer=tf.optimizers.Adam(lr),
         loss="categorical_crossentropy",
+        # metrics=[tf.keras.metrics.Accuracy()],
         metrics=["accuracy"],
     )
     print(model.summary())
