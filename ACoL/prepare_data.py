@@ -32,7 +32,7 @@ class AugmentImageGenerator(tf.keras.preprocessing.image.ImageDataGenerator):
 
 
 def preprocessing(x):
-    return (x - 127.5) / 128
+    return (x - 127.5) / 127.5
 
 
 def generate_images(directory, batch_size, train=True):
