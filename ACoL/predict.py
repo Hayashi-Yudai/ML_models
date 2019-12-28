@@ -69,7 +69,4 @@ if __name__ == "__main__":
     args = train.get_parser().parse_args()
     model = ACoL_predict(args)
 
-    predict(
-        "/home/yudai/Pictures/raw-img/validation/cow/OIP-0SwWnZTgIxQGLEKAqkSrdwHaFc.jpeg",
-        model,
-    )
+    predict("/home/yudai/Pictures/raw-img/validation/cow/validate.jpeg", model)

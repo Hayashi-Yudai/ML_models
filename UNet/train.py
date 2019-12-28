@@ -3,7 +3,6 @@ import tensorflow as tf
 import tensorflow.keras.backend as K
 from UNet import model
 from UNet.prepare_data import data_gen
-import os
 
 
 def get_parser():
@@ -59,7 +58,9 @@ def train(args: "argparse.Namespace"):
         verbose=1,
     )
 
-    segmented_data = args.segmented_data # os.path.join(args.train_data, "../segmented_images")
+    segmented_data = (
+        args.segmented_data
+    )  # os.path.join(args.train_data, "../segmented_images")
     generator = data_gen(args.train_data, segmented_data, args.batch_size, n_classes)
     unet.fit_generator(generator, steps_per_epoch=30, epochs=100, callbacks=[ckpt])
 
