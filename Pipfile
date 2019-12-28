@@ -20,4 +20,4 @@ argparse = "*"
 python_version = "3.7"
 
 [scripts]
-test = "python -m pytest"
+test = "python -m pytest -p no:warnings"
