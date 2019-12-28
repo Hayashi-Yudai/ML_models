@@ -10,7 +10,7 @@ class AugmentImageGenerator(tf.keras.preprocessing.image.ImageDataGenerator):
     def flow_from_directory(
         self,
         directory: str,
-        target_size: Tuple(int, int),
+        target_size: Tuple[int, int],
         batch_size: int,
         class_mode: str,
         train: bool = True,
