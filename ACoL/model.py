@@ -47,7 +47,6 @@ class Adversarial(tf.keras.layers.Layer):
         self.threshold = threshold
 
     def call(self, inputs):
-        # vgg_end は VGG16 の出力, interm は branchA の GAP 直前 branchA_end は GAP, Softmax したあと
         vgg_end, interm, branchA_end = inputs  # (?, 7, 7, 512), (?, 7, 7, 10)
         max_idx = tf.argmax(branchA_end, axis=1)
 
@@ -99,14 +98,3 @@ def ACoL(args):
     output = tf.keras.layers.Add()([x, y])
 
     return tf.keras.Model(inputs=vgg16.input, outputs=output)
-
-
-if __name__ == "__main__":
-
-    class p:
-        n_classes = 10
-        batch_size = 5
-        threshold = 0.8
-
-    m = ACoL(p())
-    m.summary()
