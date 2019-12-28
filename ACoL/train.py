@@ -1,6 +1,6 @@
 import argparse
-from model import ACoL
-import prepare_data
+from ACoL.model import ACoL
+import ACoL.prepare_data as prepare_data
 import tensorflow as tf
 
 
@@ -46,6 +46,7 @@ def train(args):
     model.compile(
         optimizer=tf.optimizers.Adam(lr),
         loss="categorical_crossentropy",
+        # metrics=[tf.keras.metrics.Accuracy()],
         metrics=["accuracy"],
     )
     print(model.summary())

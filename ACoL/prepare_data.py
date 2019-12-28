@@ -1,8 +1,6 @@
+from typing import Tuple
 import tensorflow as tf
 import imgaug.augmenters as iaa
-
-IMAGE_DIR = "/home/yudai/Pictures/raw-img"
-CLASS_NUM = 10
 
 
 class AugmentImageGenerator(tf.keras.preprocessing.image.ImageDataGenerator):
@@ -10,7 +8,12 @@ class AugmentImageGenerator(tf.keras.preprocessing.image.ImageDataGenerator):
         super(AugmentImageGenerator, self).__init__(**kwargs)
 
     def flow_from_directory(
-        self, directory, target_size, batch_size, class_mode, train=True
+        self,
+        directory: str,
+        target_size: Tuple[int, int],
+        batch_size: int,
+        class_mode: str,
+        train: bool = True,
     ):
         batches = super().flow_from_directory(
             directory,
@@ -35,10 +38,10 @@ class AugmentImageGenerator(tf.keras.preprocessing.image.ImageDataGenerator):
 
 
 def preprocessing(x):
-    return (x - 127.5) / 128
+    return (x - 127.5) / 127.5
 
 
-def generate_images(directory, batch_size, train=True):
+def generate_images(directory: str, batch_size: int, train: bool = True):
     if train:
         datagen = AugmentImageGenerator(
             preprocessing_function=preprocessing,

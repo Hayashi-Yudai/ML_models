@@ -2,6 +2,9 @@ import tensorflow as tf
 
 
 class subbranch:
+    def __init__(self, sign):
+        self.sign = sign
+
     def __call__(self, inputs):
         return self.sub_block(inputs)
 
@@ -11,36 +14,39 @@ class subbranch:
             kernel_size=3,
             padding="SAME",
             activation=tf.keras.activations.relu,
+            name=f"subbranch{self.sign}_conv1",
         )(x)
-        x = tf.keras.layers.BatchNormalization()(x)
+        x = tf.keras.layers.BatchNormalization(name=f"subbranch{self.sign}_bn1")(x)
         x = tf.keras.layers.Conv2D(
             filters=1024,
             kernel_size=3,
             padding="SAME",
             activation=tf.keras.activations.relu,
+            name=f"subbranch{self.sign}_conv2",
         )(x)
-        x = tf.keras.layers.BatchNormalization()(x)
+        x = tf.keras.layers.BatchNormalization(name=f"subbranch{self.sign}_bn2")(x)
         x = tf.keras.layers.Conv2D(
             filters=10,
             kernel_size=1,
             padding="SAME",
             activation=tf.keras.activations.relu,
+            name=f"subbranch{self.sign}_conv3",
         )(x)
-        x = tf.keras.layers.BatchNormalization()(x)
+        x = tf.keras.layers.BatchNormalization(name=f"subbranch{self.sign}_bn3")(x)
         features = x
-        x = tf.keras.layers.GlobalAveragePooling2D()(x)
-        x = tf.keras.layers.Softmax()(x)
+        x = tf.keras.layers.GlobalAveragePooling2D(name=f"subbranch{self.sign}_gap1")(x)
+        x = tf.keras.layers.Softmax(name=f"subbranch{self.sign}_softmax1")(x)
 
         return x, features
 
 
 class Adversarial(tf.keras.layers.Layer):
     def __init__(self, batch_size, threshold):
-        super(Adversarial, self).__init__(self)
+        super(Adversarial, self).__init__()
         self.batch_size = batch_size
         self.threshold = threshold
 
-    def call(self, inputs, **kwargs):
+    def call(self, inputs):
         vgg_end, interm, branchA_end = inputs  # (?, 7, 7, 512), (?, 7, 7, 10)
         max_idx = tf.argmax(branchA_end, axis=1)
 
@@ -61,6 +67,7 @@ class Adversarial(tf.keras.layers.Layer):
         adv = tf.subtract(vgg_end, tmp)
 
         return adv
+        return vgg_end
 
     def compute_output_shape(self, input_shape):
         return (None, 7, 7, 512)
@@ -83,18 +90,11 @@ def ACoL(args):
     x = vgg16.output  # (?, 7, 7, n_classes)
 
     # branch-A
-    x, featuresA = subbranch()(x)
+    x, featuresA = subbranch("A")(x)
 
     # branch-B
     y = Adversarial(batch_size, threshold)([vgg16.output, featuresA, x])
-    y, featuresB = subbranch()(y)
+    y, featuresB = subbranch("B")(y)
     output = tf.keras.layers.Add()([x, y])
 
     return tf.keras.Model(inputs=vgg16.input, outputs=output)
-
-
-if __name__ == "__main__":
-    import numpy as np
-
-    model = ACoL()
-    print(model.predict(np.ones((1, 224, 224, 3))))
