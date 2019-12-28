@@ -1,6 +1,6 @@
 import argparse
-from model import ACoL
-import prepare_data
+from ACoL.model import ACoL
+import ACoL.prepare_data as prepare_data
 import tensorflow as tf
 
 

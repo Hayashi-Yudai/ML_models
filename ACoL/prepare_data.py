@@ -1,9 +1,6 @@
 import tensorflow as tf
 import imgaug.augmenters as iaa
 
-IMAGE_DIR = "/home/yudai/Pictures/raw-img"
-CLASS_NUM = 10
-
 
 class AugmentImageGenerator(tf.keras.preprocessing.image.ImageDataGenerator):
     def __init__(self, **kwargs):
