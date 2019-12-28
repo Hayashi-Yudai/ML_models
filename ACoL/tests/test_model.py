@@ -26,7 +26,7 @@ def test_subbranch(setup, params):
     width = 10
     height = 10
     inputs = np.random.random((1, height, width, 3))
-    branch = model.subbranch()
+    branch = model.subbranch("")
 
     output = branch(inputs)
     assert len(output) == 2
