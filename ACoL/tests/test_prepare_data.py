@@ -1,5 +1,9 @@
 from ACoL.prepare_data import AugmentImageGenerator, preprocessing, generate_images
 import numpy as np
+import os
+import pytest
+
+is_local = os.path.exists("/home/yudai/Pictures/raw-img")
 
 
 def test_preprocessing_primitives():
@@ -17,6 +21,7 @@ def test_preprocessing_array():
     assert np.all(preprocessing(test_input) == np.ones((2, 2, 3)))
 
 
+@pytest.mark.skipif(is_local, reason="is not local")
 def test_generator_val():
     imgs_dir = "/home/yudai/Pictures/raw-img/train"  # has 10 folders
     gen = AugmentImageGenerator()
@@ -44,6 +49,7 @@ def test_generator_val():
         break
 
 
+@pytest.mark.skipif(is_local, reason="is not local")
 def test_generator_train():
     imgs_dir = "/home/yudai/Pictures/raw-img/train"  # has 10 folders
     gen = AugmentImageGenerator()
@@ -70,6 +76,7 @@ def test_generator_train():
         break
 
 
+@pytest.mark.skipif(is_local, reason="is not local")
 def test_generate_images():
     imgs_dir = "/home/yudai/Pictures/raw-img/train"  # has 10 folders
     batch_size = 10
