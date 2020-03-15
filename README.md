@@ -15,7 +15,7 @@ You can use these models for training or validation.
 ## Requirements
 
 - Python 3.6>=
-- Tensorflow 2.0.0>=
+- Tensorflow 2.0.1>=
 - PIL
 - Imgaug
 - Numpy
