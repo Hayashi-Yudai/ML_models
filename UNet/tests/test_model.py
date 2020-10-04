@@ -71,4 +71,3 @@ def test_unet_regularizer(setup, params):
     for layer in unet.layers:
         if "kernel_regularizer" in layer.__dict__:
             assert abs(float(layer.kernel_regularizer.l2) - params.l2) < 1e-6
-            assert abs(float(layer.kernel_regularizer.l1) - 0.0) < 1e-6
