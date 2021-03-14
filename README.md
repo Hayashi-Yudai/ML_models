@@ -15,7 +15,7 @@ You can use these models for training or validation.
 ## Requirements
 
 - Python 3.6>=
-- Tensorflow 2.0.1>=
+- Tensorflow 2.4.0>=
 - PIL
 - Imgaug
 - Numpy
@@ -51,4 +51,4 @@ $ pipenv run python -m $(MODEL_NAME)/train $(options)
 
 "ML models" is licenced under the MIT licence.
 
-(C) Copyright 2019, Yudai Hayashi
+(C) Copyright 2021, Yudai Hayashi
