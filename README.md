@@ -42,9 +42,6 @@ $ pipenv run python -m $(MODEL_NAME)/train $(options)
 ```
 
 ## Future Plans
-- Fix the test code with pytest. [issue](https://github.com/Hayashi-Yudai/ML_models/issues/42) (*Important*)
-    - Your contributions are welcome
-    - Test is broken... it's ironic, isn't it?
 - Modularize this repository to enable users to import whole models
 
 ## Licence
