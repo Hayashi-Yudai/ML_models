@@ -44,13 +44,13 @@ class ArcFace(Layer):
 
 
 def arcface_main(args):
-    n_classes = args.n_classes
-    penalty = args.penalty
-    enhance = args.enhance
-    dropout_rate = args.dropout
-    decay = args.decay
+    n_classes = args["n_classes"]
+    penalty = args["penalty"]
+    enhance = args["enhance"]
+    dropout_rate = args["dropout"]
+    decay = args["decay"]
 
-    backbone = VGG16 if args.backbone == "VGG16" else ResNet50
+    backbone = VGG16 if args["backbone"] == "VGG16" else ResNet50
     backbone = backbone(include_top=False, input_shape=(100, 100, 3), classes=n_classes)
 
     for layer in backbone.layers:
@@ -69,10 +69,10 @@ def arcface_main(args):
 
     model = tf.keras.Model(inputs=[backbone.input, y], outputs=x)
 
-    if args.use_param_folder != "":
+    if args["use_param_folder"] != "":
         base_url = (
             os.path.dirname(os.path.abspath(__file__))
-            + f"/../params/{args.use_param_folder}/"
+            + f"/../params/{args['use_param_folder']}/"
         )
         model.load_weights(base_url + "params.hdf5")
 

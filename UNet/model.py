@@ -1,5 +1,4 @@
 from typing import Optional
-import argparse
 import tensorflow as tf
 
 
@@ -34,9 +33,9 @@ class upsampling:
         return concat
 
 
-def UNet(args: "argparse.Namespace") -> tf.keras.Model:
-    n_classes: int = args.n_classes
-    decay: float = args.l2
+def UNet(args: dict) -> tf.keras.Model:
+    n_classes: int = args["n_classes"]
+    decay: float = args["l2"]
 
     x = tf.keras.Input(shape=(224, 224, 3))
 
@@ -69,7 +68,7 @@ def UNet(args: "argparse.Namespace") -> tf.keras.Model:
         if "kernel_regularizer" in layer.__dict__:
             layer.kernel_regularizer = tf.keras.regularizers.l2(decay)
 
-    if args.weights != "":
-        model.load_weights(args.weights)
+    if args["weights"] != "":
+        model.load_weights(args["weights"])
 
     return model

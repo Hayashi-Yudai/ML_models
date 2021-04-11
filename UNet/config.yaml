@@ -1,0 +1,9 @@
+n_classes: 2
+epoch: 100
+learning_rate: 0.001
+train_rate: 0.8
+train_data: ./UNet/dataset/raw_images
+segmented_data: ./UNet/dataset/segmented_images
+batch_size: 8
+l2: 0.05
+weights: ""
