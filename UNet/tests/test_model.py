@@ -14,7 +14,7 @@ def setup():
 
 @pytest.fixture
 def params():
-    return {"n_classes": 2, "l2": 0.01, "weights": None}
+    return {"n_classes": 2, "l2": 0.01, "weights": ""}
 
 
 def test_layers_callable():
