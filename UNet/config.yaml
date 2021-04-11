@@ -6,4 +6,4 @@ train_data: ./UNet/dataset/raw_images
 segmented_data: ./UNet/dataset/segmented_images
 batch_size: 8
 l2: 0.05
-weights: 
+weights: ""

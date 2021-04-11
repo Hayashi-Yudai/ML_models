@@ -25,7 +25,7 @@ def train(args):
     csvLogger = tf.keras.callbacks.CSVLogger(args["save_params"] + "/training.log")
 
     model = ACoL(args)
-    if args["use_param"] is not None:
+    if args["use_param"] != "":
         model.load_weights(args["use_param"])
 
     model.compile(

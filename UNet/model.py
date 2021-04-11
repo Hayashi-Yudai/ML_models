@@ -68,7 +68,7 @@ def UNet(args: dict) -> tf.keras.Model:
         if "kernel_regularizer" in layer.__dict__:
             layer.kernel_regularizer = tf.keras.regularizers.l2(decay)
 
-    if args["weights"] is not None:
+    if args["weights"] != "":
         model.load_weights(args["weights"])
 
     return model

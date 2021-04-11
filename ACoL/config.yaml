@@ -6,4 +6,4 @@ lr: 0.001
 batch_size: 20
 threshold: 0.85
 save_params: ./
-use_param: 
+use_param: ""

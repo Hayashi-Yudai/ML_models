@@ -11,4 +11,4 @@ dropout: 0.5
 train_data: ./
 validation_data: ./
 save_path: ./params
-use_param_folder: 
+use_param_folder: ""

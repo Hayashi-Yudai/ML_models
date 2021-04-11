@@ -69,7 +69,7 @@ def arcface_main(args):
 
     model = tf.keras.Model(inputs=[backbone.input, y], outputs=x)
 
-    if args["use_param_folder"] is not None:
+    if args["use_param_folder"] != "":
         base_url = (
             os.path.dirname(os.path.abspath(__file__))
             + f"/../params/{args['use_param_folder']}/"
