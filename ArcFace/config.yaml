@@ -1,0 +1,14 @@
+n_classes: 10
+epochs: 100
+batch_size: 8
+optimizer: SGD  # Adam or SGD
+lr: 0.1
+penalty: 0.5
+enhance: 65
+decay: 0.0005
+backbone: ResNet50  # VGG16 or ResNet50
+dropout: 0.5
+train_data: ./
+validation_data: ./
+save_path: ./params
+use_param_folder: 
