@@ -16,6 +16,7 @@ matplotlib = "==3.1.1"
 Pillow = ">=8.1.1"
 pytest = "*"
 argparse = "*"
+pyyaml = "==5.4.1"
 
 [requires]
 python_version = "3.8"

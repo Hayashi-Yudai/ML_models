@@ -14,12 +14,7 @@ def setup():
 
 @pytest.fixture
 def params():
-    class p:
-        n_classes = 2
-        l2 = 0.01
-        weights = ""
-
-    return p()
+    return {"n_classes": 2, "l2": 0.01, "weights": None}
 
 
 def test_layers_callable():
@@ -62,7 +57,7 @@ def test_unet(setup, params):
     unet = model.UNet(params)
     output = unet.predict(test_input)
 
-    assert output.shape == (1, 224, 224, params.n_classes)
+    assert output.shape == (1, 224, 224, params["n_classes"])
 
 
 def test_unet_regularizer(setup, params):
@@ -70,4 +65,4 @@ def test_unet_regularizer(setup, params):
 
     for layer in unet.layers:
         if "kernel_regularizer" in layer.__dict__:
-            assert abs(float(layer.kernel_regularizer.l2) - params.l2) < 1e-6
+            assert abs(float(layer.kernel_regularizer.l2) - params["l2"]) < 1e-6
