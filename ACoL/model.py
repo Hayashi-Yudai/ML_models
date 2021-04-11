@@ -74,9 +74,9 @@ class Adversarial(tf.keras.layers.Layer):
 
 
 def ACoL(args):
-    n_classes = args.n_classes
-    batch_size = args.batch_size
-    threshold = args.threshold
+    n_classes = args["n_classes"]
+    batch_size = args["batch_size"]
+    threshold = args["threshold"]
 
     vgg16 = tf.keras.applications.VGG16(
         include_top=False, input_shape=(224, 224, 3), classes=n_classes
