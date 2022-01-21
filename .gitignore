@@ -1,7 +1,6 @@
 __pycache__
 .vscode
 .venv
-Pipfile.lock
 params
 *.pyc
 *.log
