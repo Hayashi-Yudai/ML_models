@@ -8,7 +8,7 @@ black = "==19.3b0"
 flake8 = "*"
 
 [packages]
-tensorflow = "==2.7.0"
+tensorflow = "==2.9.3"
 imgaug = "==0.4.0"
 numpy = "==1.22.1"
 scipy = "==1.7.3"
